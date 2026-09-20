@@ -24,7 +24,7 @@ By utilizing gaseous and ionized plasma fuels, the kinetic energy of high-veloci
 * **`Theoretical_Research_Direct_MHD_Plasma_Reactor.md`** — The comprehensive 7-section master scientific whitepaper detailing:
   1. The 5-Micrometer Solid Fuel Wall and why gas/plasma fuels bypass it.
   2. The Lorentz Force and electromagnetic charge separation physics.
-  3. The Dual-Fuel Architecture: Gaseous Fission (`UF4-He`) and Aneutronic Fusion (`D-3He`).
+  3. The Three-Tier Fuel Architecture: Primary Starter **Deuterium-Deuterium (D-D)** from seawater, Advanced Aneutronic **D-3He**, and Gaseous Fission (`UF4-He`).
   4. The Magnetohydrodynamic (MHD) induction channel and magnetic nozzle engineering.
   5. The 1-Gram Fuel Safety Limit (why meltdowns are physically impossible).
   6. The vital symbiosis with **M.E.T.S. 04** high-rate fireproof solid-state batteries.

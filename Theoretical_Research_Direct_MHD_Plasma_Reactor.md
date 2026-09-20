@@ -77,34 +77,64 @@ Project D.E.C.A. is engineered to operate across two progressive fuel cycles:
 ```
                           DUAL FUEL IMPLEMENTATION
                           
-        TRACK 1: GASEOUS FISSION                TRACK 2: ANEUTRONIC FUSION
-      (Near-Term Advanced Fission)                 (Long-Term Ultimate)
-                  │                                         │
-                  ▼                                         ▼
-      Uranium Tetrafluoride (UF4)               Deuterium (2H) + Helium-3 (3He)
-          in Helium Buffer                          from Clean Seawater
-                  │                                         │
-                  ▼                                         ▼
-      Fission fragments shoot                   100% Charged Ion Products:
-      through low-density gas.                  He-4 (+2) + Proton (+1).
-                  │                                         │
-                  ▼                                         ▼
-      Reflector sustains flux.                  Zero neutrons. Zero waste.
+                          THREE-TIER FUEL ARCHITECTURE
+                          
+        TIER 1: PRIMARY STARTER                 TIER 2: ADVANCED ANEUTRONIC             TIER 3: GASEOUS FISSION
+      Deuterium-Deuterium (D-D)                 Deuterium - Helium-3 (D-3He)           Uranium Tetrafluoride (UF4)
+         (Seawater Abundant)                         (Clean Space Fuel)                     in Helium Buffer
+                  │                                         │                                         │
+                  ▼                                         ▼                                         ▼
+      50% Pure Charged Branch                   100% Charged Ion Products:               Fission fragments shoot
+      (T + p, 4.03 MeV energy)                  He-4 (+2) + Proton (+1).                 through low-density gas.
+                  │                                         │                                         │
+                  ▼                                         ▼                                         ▼
+      Mild 2.45 MeV Neutrons.                   Zero neutrons. Zero waste.               Reflector sustains flux.
 ```
 
-#### Track 1: Gaseous Fission Core (Uranium Tetrafluoride + Helium)
-* **Working Medium:** Uranium Tetrafluoride gas (`UF4`) or Uranium Hexafluoride (`UF6`) diluted in high-purity Helium carrier gas at a pressure of 10 to 20 atmospheres.
-* **Density Advantage:** Because the gas density is orders of magnitude lower than solid metal, the stopping distance of fission fragments increases from 5 micrometers to **several meters**, allowing full kinetic coupling to the surrounding gas.
-* **Ionization Mechanism:** As fission fragments traverse the gas, they strip electrons from helium atoms, creating a self-sustaining, non-equilibrium ionized plasma with extreme electrical conductivity.
+#### Tier 1: Primary Starter Fuel — The Deuterium-Deuterium (D-D) Cycle
+For near-term laboratory testing and early-generation commercial power plants, **Deuterium-Deuterium (D-D)** serves as the primary fuel. 
 
-#### Track 2: Advanced Aneutronic Fusion (Deuterium + Helium-3)
-The ultimate realization of Project D.E.C.A. utilizes aneutronic fusion:
+1. **Infinite Availability from Ordinary Seawater:**
+   * In ordinary terrestrial water, roughly 1 in every 6,420 hydrogen atoms is Deuterium (0.0156% natural abundance).
+   * Heavy water extraction infrastructure is mature and commercially operational in India (DAE Heavy Water Board at Thal, Hazira, and Manuguru), providing fuel independence without geopolitical supply-chain risks or lunar mining requirements.
+   * Fuel cost: Under $1,000 per kilogram of pure Deuterium gas.
+
+2. **The 50/50 Branching Physics:**
+   When two Deuterium nuclei fuse inside the magnetic compression core, they undergo two competing reaction branches with approximately equal (50%) cross-sectional probability:
+   * **Branch A (Proton Branch - 50% Probability):**
+     ```
+     2H (Deuterium) + 2H (Deuterium)  ──►  3H (Tritium, 1.01 MeV)  +  1p (Proton, 3.02 MeV)
+     ```
+     *Total Kinetic Energy:* **4.03 MeV**.
+     *The Direct-Induction Advantage:* Both the Tritium nucleus (`3H+`) and the Proton (`p+`) are **100% charged ions**. Zero neutrons are generated in this branch. The entire 4.03 MeV couples directly into the magnetic nozzle and induction coils!
+   * **Branch B (Neutron Branch - 50% Probability):**
+     ```
+     2H (Deuterium) + 2H (Deuterium)  ──►  3He (Helium-3, 0.82 MeV)  +  1n (Neutron, 2.45 MeV)
+     ```
+     *Total Kinetic Energy:* **3.27 MeV**.
+     *Radiation Safety Advantage:* The neutron kinetic energy is only **2.45 MeV**, compared to the brutal 14.1 MeV neutrons of Deuterium-Tritium (D-T) fusion. Materials face six times less displacement damage (dpa), vastly extending the operating lifespan of the vacuum vessel and superconducting magnets.
+
+3. **The "Catalyzed D-D" In-Situ Breeding Cascade:**
+   As the D-D reaction proceeds, the newly produced `3He` and `3H` nuclei remain confined in the high-temperature plasma, immediately reacting with surrounding Deuterium fuel:
+   ```
+   2H + 3He  ──►  4He (3.6 MeV)  +  1p (14.7 MeV)   [18.3 MeV Pure Charged Direct Power]
+   2H + 3H   ──►  4He (3.5 MeV)  +  1n (14.1 MeV)   [17.6 MeV Total Energy]
+   ```
+   This self-catalyzing reaction cascade breeds its own secondary fuel on the fly, dramatically boosting net electrical generation per gram of injected Deuterium.
+
+#### Tier 2: Advanced Aneutronic Fusion (Deuterium + Helium-3)
+The long-term commercial optimization of Project D.E.C.A. utilizes aneutronic fusion:
 ```
 2H (Deuterium) + 3He (Helium-3)  ──►  4He (3.6 MeV)  +  1p (14.7 MeV)
 ```
-* **Why this is the holy grail for D.E.C.A.:** 
-  * Unlike standard Deuterium-Tritium fusion (which emits 80% of its energy in uncharged neutrons), the `D-3He` reaction releases **100% of its energy in purely charged particles** (an Alpha particle `He-4` with charge +2, and a Proton `p+` with charge +1).
+* **Why this is the ultimate ideal for D.E.C.A.:** 
+  * 100% of the energy is carried by charged particles (Alpha `He-4` with charge +2, and Proton `p+` with charge +1).
   * Every single unit of energy is electromagnetically active, allowing near-complete direct magnetic induction with **zero long-lived radioactive waste and near-zero neutron activation.**
+
+#### Tier 3: Gaseous Fission Core (Uranium Tetrafluoride + Helium Buffer)
+* **Working Medium:** Uranium Tetrafluoride gas (`UF4`) or Uranium Hexafluoride (`UF6`) diluted in high-purity Helium carrier gas at a pressure of 10 to 20 atmospheres.
+* **Density Advantage:** Because the gas density is orders of magnitude lower than solid metal, the stopping distance of fission fragments increases from 5 micrometers to **several meters**, allowing full kinetic coupling to the surrounding gas.
+* **Ionization Mechanism:** As fission fragments traverse the gas, they strip electrons from helium atoms, creating a self-sustaining, non-equilibrium ionized plasma with extreme electrical conductivity.
 
 ---
 
