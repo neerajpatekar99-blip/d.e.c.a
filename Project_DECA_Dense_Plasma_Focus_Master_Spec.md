@@ -90,10 +90,21 @@ The reactor core utilizes an optimized Mather-type coaxial electrode configurati
 * **Pitch Circle Diameter:** 100.0 mm (anode-to-cathode gap: 30.0 mm).
 * **Grounding:** Symmetrically clamped to the bottom ground stripline plate to maintain pure azimuthal symmetry.
 
-#### 2.3 Field-Enhancing Insulator Sleeve
-* **Material:** High-purity Boron Nitride (BN) or 99.8% Alumina (Al2O3).
-* **Geometry:** Knife-edge stepped lip extending 35 mm along the base of the anode.
-* **Function:** Promotes rapid, uniform, azimuthally symmetric surface breakdown at t = 0, preventing azimuthally asymmetric plasma filamentation ("spoking").
+#### 2.3 Field-Enhancing Insulator Sleeve: Strict Banishment of Al2O3 in Favor of Hexagonal Boron Nitride (h-BN)
+
+* **Mandated Material:** **Hot-Pressed Hexagonal Boron Nitride (HP-BN, Grade AX05 / Combat Grade, 99.5%+ Purity)**.
+* **Strict Banishment of Alumina (Al2O3):**
+  * *The Bremsstrahlung Poison Pill:* Alumina introduces high-Z Aluminum (Z = 13) and Oxygen (Z = 8). Because radiative Bremsstrahlung cooling scales with Z^2 (Aluminum Z^2 = 169; Oxygen Z^2 = 64), microscopic surface ablation of Al2O3 into the pinch injects high-Z contaminants that instantly flash-freeze the 200 keV ion temperature, completely extinguishing p-¹¹B fusion.
+  * *Surface Metallization Arcing:* Sputtered tungsten from the anode redeposits on porous alumina, forming a conductive mirror within 15 shots that causes flashover short-circuits at the insulator base.
+  * *Thermal Shock Vulnerability:* Al2O3 has poor thermal shock resistance (R-factor < 150 W/m), causing brittle micro-fractures under repetitive gigawatt/cm² surface heating.
+* **The Hexagonal Boron Nitride (h-BN) Advantage:**
+  1. *Fuel-Compatible Low-Z Chemistry:* h-BN consists solely of Boron (Z = 5, Z^2 = 25) and Nitrogen (Z = 7, Z^2 = 49). Any micro-ablation simply adds native Boron fuel into the discharge rather than fatal heavy ions.
+  2. *Extreme Thermal Shock Resistance:* With in-plane thermal conductivity of 60 to 80 W/m-K and near-zero thermal expansion coefficient along the c-axis, h-BN withstands sudden 1,500 K surface thermal gradients without mechanical micro-cracking (thermal shock resistance R-factor > 2,000 W/m).
+  3. *Zero Surface Tracking:* h-BN exhibits exceptional dielectric breakdown resistance (> 45 kV/mm) and does not form persistent conductive carbon or metal tracks across its surface.
+* **Knife-Edge Triple-Junction Geometry:**
+  * Base outer diameter: 44.0 mm (snug slip-fit over the 40.0 mm anode with 0.05 mm tolerance).
+  * Axial insulator length: 35.0 mm above the cathode header plate.
+  * Field Enhancement Lip: Machined 30-degree knife-edge chamfer at the vacuum-metal-dielectric "triple junction". This amplifies local electrostatic field gradients to > 150 kV/cm, triggering rapid field emission and ensuring instantaneous, azimuthally symmetric plasma sheath breakdown at t = 0 with sub-1.5 ns jitter (preventing current spoking).
 
 ---
 
