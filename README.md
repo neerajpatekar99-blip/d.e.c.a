@@ -26,8 +26,9 @@ Commercial nuclear power plants are capped at **33% to 37% Carnot thermal effici
 | Document | Core Scientific Focus | Status |
 | :--- | :--- | :--- |
 | **[`README.md`](file:///C:/Users/Bhupendra/Desktop/DIRECT-PLASMA-REACTOR/README.md)** | Architectural overview, comparative analysis, and research index. | Active |
+| **[`Project_DECA_Dense_Plasma_Focus_Master_Spec.md`](file:///C:/Users/Bhupendra/Desktop/DIRECT-PLASMA-REACTOR/Project_DECA_Dense_Plasma_Focus_Master_Spec.md)** | **Phase I Engineering Master Specification:** Pulsed Dense Plasma Focus (DPF), W-25Re hollow anode nozzle, L < 8 nH stripline, Faraday induction stator (70% direct extraction), and p-¹¹B aneutronic dynamics. | Formulated |
 | **[`Solid_State_Lattice_Confinement_Reactor.md`](file:///C:/Users/Bhupendra/Desktop/DIRECT-PLASMA-REACTOR/Solid_State_Lattice_Confinement_Reactor.md)** | **Phase II (Pathway 2 - Core Focus):** Condensed matter electron screening (`U_e = 300-800 eV`), `ErD2`/`TiD2` solid lattice densities (`7 x 10^22 atoms/cm3`), photodisintegration knock-on trigger cycles, and solid-state core engineering. | Formulated |
-| **[`Theoretical_Research_Direct_MHD_Plasma_Reactor.md`](file:///C:/Users/Bhupendra/Desktop/DIRECT-PLASMA-REACTOR/Theoretical_Research_Direct_MHD_Plasma_Reactor.md)** | **Phase I:** Inductive electrodeless Magnetohydrodynamics (MHD), Lorentz force charge separation, supersonic magnetic nozzles, and primary seawater Deuterium-Deuterium (D-D) fuel cycles. | Formulated |
+| **[`Theoretical_Research_Direct_MHD_Plasma_Reactor.md`](file:///C:/Users/Bhupendra/Desktop/DIRECT-PLASMA-REACTOR/Theoretical_Research_Direct_MHD_Plasma_Reactor.md)** | **Phase I Theoretical Whitepaper:** Inductive electrodeless Magnetohydrodynamics (MHD), Lorentz force charge separation, supersonic magnetic nozzles, and primary seawater Deuterium-Deuterium (D-D) fuel cycles. | Formulated |
 
 ---
 
