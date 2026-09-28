@@ -12,7 +12,7 @@
       user-select: none;
     }
     body {
-      background: #050811;
+      background: #03060f;
       color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       overflow: hidden;
@@ -32,7 +32,7 @@
     .hud-panel {
       position: absolute;
       z-index: 10;
-      background: rgba(11, 18, 33, 0.88);
+      background: rgba(11, 18, 33, 0.90);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(148, 163, 184, 0.22);
@@ -124,6 +124,36 @@
       justify-content: space-between;
       align-items: center;
     }
+
+    /* Isolate Core Button */
+    .btn-isolate {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border: 1px solid #38bdf8;
+      color: #ffffff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.80rem;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+      transition: all 0.25s ease;
+    }
+    .btn-isolate:hover {
+      background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.7);
+    }
+    .btn-isolate.isolated {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      border-color: #34d399;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.5);
+    }
+
     .layer-toggle {
       display: flex;
       align-items: center;
@@ -428,7 +458,7 @@
 
   <!-- Top-Left Title & Live Scientific Telemetry -->
   <div class="hud-panel" id="header-panel">
-    <h1>PROJECT D.E.C.A. <span class="badge">Ultra-Real Lab Rig</span></h1>
+    <h1>PROJECT D.E.C.A. <span class="badge">Calibrated Studio</span></h1>
     <p>Direct Electromagnetic Conversion Architecture<br>100 kJ Aneutronic p-¹¹B Dense Plasma Focus Reactor</p>
     <div class="telemetry-grid">
       <div class="tele-item">
@@ -474,6 +504,11 @@
   <div class="hud-panel" id="controls-panel">
     <h3>Hardware Controls <span class="badge" style="font-size:0.62rem;">PBR CAD</span></h3>
     
+    <!-- One-Click Clean View / Remove All Lab Details -->
+    <button class="btn-isolate" id="btn-isolate">
+      ✨ ISOLATE CORE (Remove All Lab Details)
+    </button>
+
     <label class="layer-toggle">
       <span>80/20 Optical Breadboard Stand</span>
       <input type="checkbox" id="toggle-frame" class="toggle-checkbox" checked>
@@ -485,6 +520,10 @@
     <label class="layer-toggle">
       <span>Vacuum Roughing & Gate Valve</span>
       <input type="checkbox" id="toggle-roughing" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>High-Voltage Breech Feedthrough</span>
+      <input type="checkbox" id="toggle-rearfeed" class="toggle-checkbox" checked>
     </label>
     <label class="layer-toggle">
       <span>316LN Stainless Chamber Vessel</span>
@@ -530,9 +569,9 @@
     <div class="slider-container">
       <div class="slider-label">
         <span>Studio Lighting Brightness</span>
-        <span id="bright-val">200%</span>
+        <span id="bright-val">100%</span>
       </div>
-      <input type="range" id="bright-slider" class="slider-input" min="80" max="350" value="200">
+      <input type="range" id="bright-slider" class="slider-input" min="30" max="200" value="100">
     </div>
 
     <div class="btn-group">
@@ -607,7 +646,7 @@
   <!-- Bottom-Right Status Bar -->
   <div class="hud-panel" id="status-bar">
     <div class="status-dot"></div>
-    <span>Ultra-Realistic PBR Studio Engine • Plasmoid Beam (+X) • 6-Stage Faraday Stator</span>
+    <span>Calibrated PBR Lighting • Zero Over-Exposure • Plasmoid Beam (+X)</span>
   </div>
 
   <script>
@@ -620,18 +659,18 @@
       canvas.height = height;
       const ctx = canvas.getContext('2d');
 
-      const base = isCopper ? [200, 110, 60] : [220, 225, 235];
+      const base = isCopper ? [180, 85, 30] : [140, 150, 160];
       ctx.fillStyle = `rgb(${base[0]}, ${base[1]}, ${base[2]})`;
       ctx.fillRect(0, 0, width, height);
 
       // Fine horizontal brushed streaks
-      for (let i = 0; i < 4000; i++) {
+      for (let i = 0; i < 3000; i++) {
         const y = Math.random() * height;
         const len = 30 + Math.random() * (width - 30);
         const x = Math.random() * (width - len);
-        const val = Math.floor((Math.random() - 0.5) * 45);
-        ctx.strokeStyle = `rgba(${base[0] + val}, ${base[1] + val}, ${base[2] + val}, 0.28)`;
-        ctx.lineWidth = 1 + Math.random() * 1.5;
+        const val = Math.floor((Math.random() - 0.5) * 35);
+        ctx.strokeStyle = `rgba(${base[0] + val}, ${base[1] + val}, ${base[2] + val}, 0.25)`;
+        ctx.lineWidth = 1 + Math.random();
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + len, y);
@@ -650,13 +689,13 @@
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = '#dcdfe6';
+      ctx.fillStyle = '#94a3b8';
       ctx.fillRect(0, 0, 512, 512);
 
       // Concentric lathe machining grooves
-      for (let r = 10; r < 250; r += 2.5) {
-        const val = (Math.random() - 0.5) * 35;
-        ctx.strokeStyle = `rgba(${200 + val}, ${205 + val}, ${215 + val}, 0.35)`;
+      for (let r = 10; r < 250; r += 3) {
+        const val = (Math.random() - 0.5) * 25;
+        ctx.strokeStyle = `rgba(${140 + val}, ${150 + val}, ${160 + val}, 0.35)`;
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.arc(256, 256, r, 0, Math.PI * 2);
@@ -707,11 +746,11 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, 256, 256);
 
-      for (let i = 0; i < 6000; i++) {
+      for (let i = 0; i < 4000; i++) {
         const x = Math.random() * 256;
         const y = Math.random() * 256;
         const r = Math.random() * 2;
-        const alpha = 0.2 + Math.random() * 0.6;
+        const alpha = 0.2 + Math.random() * 0.5;
         ctx.fillStyle = `rgba(224, 242, 254, ${alpha})`;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -731,7 +770,7 @@
     const texFrost = createIceFrostTexture();
 
     // =========================================================================
-    // 2. THREE.JS INITIALIZATION WITH TONE MAPPING
+    // 2. THREE.JS INITIALIZATION WITH CALIBRATED TONE MAPPING
     // =========================================================================
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
@@ -745,7 +784,7 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.30;
+    renderer.toneMappingExposure = 0.88; // Calibrated exposure (Zero blowout!)
     renderer.outputEncoding = THREE.sRGBEncoding;
     container.appendChild(renderer.domElement);
 
@@ -757,38 +796,27 @@
     controls.target.set(80, 0, 0);
 
     // =========================================================================
-    // 3. PHOTOREALISTIC STUDIO ENVIRONMENT MAP
+    // 3. SUBTLE STUDIO SPECULAR ENVIRONMENT MAP (No Nuclear Whiteout)
     // =========================================================================
     function createStudioEnvironment() {
       const pmremGenerator = new THREE.PMREMGenerator(renderer);
       pmremGenerator.compileEquirectangularShader();
 
       const envScene = new THREE.Scene();
-      envScene.background = new THREE.Color(0x070b14);
+      envScene.background = new THREE.Color(0x050811); // Dark clean studio background
 
-      // Key Softbox
-      const sbKey = new THREE.Mesh(new THREE.PlaneGeometry(800, 1000), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-      sbKey.position.set(700, 500, 500);
-      sbKey.lookAt(0, 0, 0);
-      envScene.add(sbKey);
+      // Soft muted specular strips (gentle metal sheen, NOT 100% white radiation!)
+      const stripMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
+      
+      const strip1 = new THREE.Mesh(new THREE.PlaneGeometry(300, 800), stripMat);
+      strip1.position.set(600, 300, 400);
+      strip1.lookAt(0, 0, 0);
+      envScene.add(strip1);
 
-      // Top Diffuser Ceiling
-      const sbTop = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.MeshBasicMaterial({ color: 0xe0f2fe }));
-      sbTop.position.set(0, 800, 0);
-      sbTop.rotation.x = Math.PI / 2;
-      envScene.add(sbTop);
-
-      // Cool Cyan Rim Softbox
-      const sbRim = new THREE.Mesh(new THREE.PlaneGeometry(600, 900), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
-      sbRim.position.set(-700, 300, -500);
-      sbRim.lookAt(0, 0, 0);
-      envScene.add(sbRim);
-
-      // Ground Floor Reflection Panel
-      const sbFloor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshBasicMaterial({ color: 0x1e293b }));
-      sbFloor.position.set(0, -600, 0);
-      sbFloor.rotation.x = -Math.PI / 2;
-      envScene.add(sbFloor);
+      const strip2 = new THREE.Mesh(new THREE.PlaneGeometry(300, 800), stripMat);
+      strip2.position.set(-600, 300, -400);
+      strip2.lookAt(0, 0, 0);
+      envScene.add(strip2);
 
       const cubeRenderTarget = pmremGenerator.fromScene(envScene, 0.04);
       scene.environment = cubeRenderTarget.texture;
@@ -796,16 +824,16 @@
     createStudioEnvironment();
 
     // =========================================================================
-    // 4. POSTPROCESSING (UnrealBloomPass)
+    // 4. POSTPROCESSING (UnrealBloomPass with High Threshold)
     // =========================================================================
     let composer, bloomPass;
     try {
       const renderPass = new THREE.RenderPass(scene, camera);
       bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.85,
-        0.35,
-        0.75
+        0.35, // Controlled subtle glow
+        0.20, // Tight radius
+        0.98  // High threshold: ONLY the 15.0 intensity plasma core blooms, NEVER metal!
       );
       composer = new THREE.EffectComposer(renderer);
       composer.addPass(renderPass);
@@ -815,31 +843,31 @@
     }
 
     // =========================================================================
-    // 5. STUDIO LIGHTING
+    // 5. CALIBRATED STUDIO LIGHTING (Balanced, Photorealistic Contrast)
     // =========================================================================
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 2.0);
+    const hemiLight = new THREE.HemisphereLight(0x94a3b8, 0x0f172a, 0.35);
     scene.add(hemiLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
-    keyLight.position.set(500, 750, 450);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.25);
+    keyLight.position.set(450, 600, 400);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 2048;
     keyLight.shadow.mapSize.height = 2048;
     keyLight.shadow.bias = -0.0001;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x93c5fd, 1.8);
-    fillLight.position.set(-500, 350, -400);
+    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.45);
+    fillLight.position.set(-450, 300, -350);
     scene.add(fillLight);
 
-    const frontViewLight = new THREE.DirectionalLight(0xffffff, 1.6);
-    frontViewLight.position.set(0, 50, 600);
+    const frontViewLight = new THREE.DirectionalLight(0xffffff, 0.40);
+    frontViewLight.position.set(0, 40, 500);
     scene.add(frontViewLight);
 
-    // Dynamic Plasma Discharge Lights
+    // Dynamic Plasma Discharge Lights (Only turn on during pulse)
     const plasmaCoreLight = new THREE.PointLight(0xa855f7, 0, 900);
     plasmaCoreLight.position.set(88, 0, 0);
     scene.add(plasmaCoreLight);
@@ -849,55 +877,55 @@
     scene.add(plasmoidBeamLight);
 
     // =========================================================================
-    // 6. PHOTOREALISTIC PBR MATERIALS
+    // 6. PHOTOREALISTIC PBR MATERIALS (Calibrated Metallic Luster)
     // =========================================================================
+    // 316LN Stainless Steel (Subtle authentic grey metal luster, NO blowout!)
     const matStainless = new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      metalness: 0.96,
-      roughness: 0.16,
+      color: 0x8894a0,
+      metalness: 0.90,
+      roughness: 0.28,
       roughnessMap: texStainless
     });
 
     const matFlangeFace = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      metalness: 0.98,
-      roughness: 0.14,
+      color: 0x9aa5b1,
+      metalness: 0.92,
+      roughness: 0.22,
       roughnessMap: texFlangeLathe
     });
 
     const matCopper = new THREE.MeshStandardMaterial({
-      color: 0xc86a3b,
-      metalness: 0.96,
-      roughness: 0.15,
+      color: 0xb45309,
+      metalness: 0.90,
+      roughness: 0.24,
       roughnessMap: texCopper
     });
 
     const matTungsten = new THREE.MeshStandardMaterial({
-      color: 0x8892a0,
-      metalness: 0.92,
-      roughness: 0.18
+      color: 0x64748b,
+      metalness: 0.85,
+      roughness: 0.32
     });
 
     const matBoronNitride = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
+      color: 0xf8fafc,
       metalness: 0.05,
-      roughness: 0.12,
-      clearcoat: 0.7,
+      roughness: 0.15,
+      clearcoat: 0.6,
       clearcoatRoughness: 0.1,
       emissive: 0xffffff,
-      emissiveIntensity: 0.08
+      emissiveIntensity: 0.04
     });
 
     const matCeramicDuct = new THREE.MeshPhysicalMaterial({
-      color: 0xf8fafc,
+      color: 0xf1f5f9,
       transparent: true,
       opacity: 0.55,
       roughness: 0.16,
-      clearcoat: 0.9,
+      clearcoat: 0.8,
       clearcoatRoughness: 0.08
     });
 
-    // Crystal clear fused quartz window (ZERO DISTORTION)
     const matViewportGlass = new THREE.MeshPhysicalMaterial({
       color: 0xe0f2fe,
       transparent: true,
@@ -915,16 +943,16 @@
     });
 
     const matKaptonHeater = new THREE.MeshStandardMaterial({
-      color: 0xd97706,
-      metalness: 0.75,
-      roughness: 0.22,
+      color: 0xb45309,
+      metalness: 0.70,
+      roughness: 0.25,
       map: texKapton,
-      emissive: 0x92400e,
-      emissiveIntensity: 0.2
+      emissive: 0x78350f,
+      emissiveIntensity: 0.15
     });
 
     const matFrostedLN2 = new THREE.MeshStandardMaterial({
-      color: 0xf8fafc,
+      color: 0xf1f5f9,
       roughness: 0.88,
       metalness: 0.12,
       bumpMap: texFrost,
@@ -932,34 +960,34 @@
     });
 
     const mat8020 = new THREE.MeshStandardMaterial({
-      color: 0xd1d5db,
-      metalness: 0.88,
-      roughness: 0.25
+      color: 0x475569,
+      metalness: 0.65,
+      roughness: 0.40
     });
 
     const matHexBolt = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      metalness: 0.98,
-      roughness: 0.08
+      color: 0xd1d5db,
+      metalness: 0.95,
+      roughness: 0.12
     });
 
     const matCapacitorBlue = new THREE.MeshStandardMaterial({
-      color: 0x0284c7,
-      metalness: 0.60,
-      roughness: 0.28
+      color: 0x0369a1,
+      metalness: 0.55,
+      roughness: 0.32
     });
 
     const matBushing = new THREE.MeshPhysicalMaterial({
       color: 0x78350f,
       metalness: 0.05,
       roughness: 0.15,
-      clearcoat: 1.0
+      clearcoat: 0.9
     });
 
     const matCutawayEdge = new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
-      metalness: 0.90,
-      roughness: 0.35
+      color: 0x475569,
+      metalness: 0.80,
+      roughness: 0.40
     });
 
     const matLead = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.5 });
@@ -1038,20 +1066,20 @@
     }
 
     // =========================================================================
-    // 8. 80/20 STRUCTURAL LAB FRAME & STAND
+    // 8. 80/20 STRUCTURAL LAB FRAME & STAND (Clean Matte Materials)
     // =========================================================================
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.35, metalness: 0.25 });
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x030712, roughness: 0.9, metalness: 0.1 });
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(3500, 3500), floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = -350;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    const floorGrid = new THREE.GridHelper(3500, 70, 0x38bdf8, 0x1e293b);
+    const floorGrid = new THREE.GridHelper(3500, 70, 0x1e293b, 0x0b1329);
     floorGrid.position.y = -349.5;
     scene.add(floorGrid);
 
-    // Optical Breadboard Table Top (Centered around reactor)
+    // Optical Breadboard Table Top
     const tableTop = new THREE.Mesh(new THREE.BoxGeometry(680, 22, 420), mat8020);
     tableTop.position.set(80, -85, 0);
     tableTop.receiveShadow = true;
@@ -1067,7 +1095,7 @@
       leg.position.set(...pos);
       groupFrame.add(leg);
 
-      const foot = new THREE.Mesh(new THREE.CylinderGeometry(20, 22, 14, 16), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9 }));
+      const foot = new THREE.Mesh(new THREE.CylinderGeometry(20, 22, 14, 16), new THREE.MeshStandardMaterial({ color: 0x030712, roughness: 0.9 }));
       foot.position.set(pos[0], -342, pos[2]);
       groupFrame.add(foot);
     });
@@ -1141,7 +1169,7 @@
     groupCaps.add(busbar2);
 
     // =========================================================================
-    // 9. SOLID 316LN STAINLESS STEEL 6-WAY CROSS (Oriented along X-axis!)
+    // 9. SOLID 316LN STAINLESS STEEL 6-WAY CROSS (Horizontal along X)
     // =========================================================================
     function createFlangeRing(radius, thickness, pos, axis = 'X', boltCount = 16) {
       const flangeGeom = new THREE.CylinderGeometry(radius + 20, radius + 20, thickness, 48);
@@ -1183,7 +1211,7 @@
     solidCrossZ.rotation.x = Math.PI / 2;
     groupChamberSolid.add(solidCrossZ);
 
-    // 90° CAD Cutaway (Front-Top Quadrant Open for Crystal Clear Inspection)
+    // 90° CAD Cutaway (Front-Top Quadrant Open for Clean View)
     const cutCylX = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 290, 48, 1, false, Math.PI * 0.5, Math.PI * 1.5), matStainless);
     cutCylX.rotation.z = Math.PI / 2;
     groupChamberCutaway.add(cutCylX);
@@ -1195,7 +1223,6 @@
     cutCylZ.rotation.x = Math.PI / 2;
     groupChamberCutaway.add(cutCylZ);
 
-    // Solid cut metal edge walls (8mm thickness representation)
     const cutEdgeWallX = new THREE.Mesh(new THREE.BoxGeometry(280, 8, 140), matCutawayEdge);
     cutEdgeWallX.position.set(0, -4, 0);
     groupChamberCutaway.add(cutEdgeWallX);
@@ -1205,12 +1232,12 @@
     groupChamberCutaway.add(cutEdgeWallZ);
 
     // CF Flanges on All 6 Ports
-    const flXLeft  = createFlangeRing(75, 20, -150, 'X', 16); // Left Port: Breech Feedthrough (-X)
+    const flXLeft  = createFlangeRing(75, 20, -150, 'X', 16); // Left Port: Breech (-X)
     const flXRight = createFlangeRing(75, 20, 150, 'X', 16);  // Right Port: Stator Output (+X)
-    const flYTop   = createFlangeRing(75, 20, 150, 'Y', 16);  // Top Port: Decaborane Boiler (+Y)
-    const flYBot   = createFlangeRing(75, 20, -150, 'Y', 16);  // Bottom Port: Gate Valve & Turbopump (-Y)
-    const flZFront = createFlangeRing(75, 20, 150, 'Z', 16);  // Front Port: Quartz Viewport (+Z)
-    const flZRear  = createFlangeRing(75, 20, -150, 'Z', 16);  // Rear Port: Diagnostic Laser (-Z)
+    const flYTop   = createFlangeRing(75, 20, 150, 'Y', 16);  // Top Port: Boiler (+Y)
+    const flYBot   = createFlangeRing(75, 20, -150, 'Y', 16);  // Bottom Port: Pump (-Y)
+    const flZFront = createFlangeRing(75, 20, 150, 'Z', 16);  // Front Port: Viewport (+Z)
+    const flZRear  = createFlangeRing(75, 20, -150, 'Z', 16);  // Rear Port: Diagnostic (-Z)
 
     groupChamber.add(flXLeft);
     groupChamber.add(flXRight);
@@ -1219,7 +1246,7 @@
     groupChamber.add(flZFront);
     groupChamber.add(flZRear);
 
-    // FRONT VIEWPORT (Direct Optical Window matching Benchmark Photo!)
+    // FRONT VIEWPORT (Clear Quartz Window)
     const viewportWindow = new THREE.Mesh(new THREE.CylinderGeometry(62, 62, 10, 48), matViewportGlass);
     viewportWindow.rotation.x = Math.PI / 2;
     viewportWindow.position.set(0, 0, 155);
@@ -1243,7 +1270,7 @@
     });
 
     // =========================================================================
-    // 10. REAR HIGH-VOLTAGE PULSE BREECH FEEDTHROUGH (Port -X on the Left)
+    // 10. REAR HIGH-VOLTAGE BREECH FEEDTHROUGH (Port -X on the Left)
     // =========================================================================
     for (let b = 0; b < 4; b++) {
       const angle = (b / 4) * Math.PI * 2 + Math.PI / 4;
@@ -1261,7 +1288,6 @@
       groupRearFeed.add(stud);
     }
 
-    // Heavy Low-Inductance Parallel Copper Stripline Plates (Mounting cleanly on -X)
     const rearStripline1 = new THREE.Mesh(new THREE.BoxGeometry(8, 110, 110), matCopper);
     rearStripline1.position.set(-210, 0, 0);
     groupRearFeed.add(rearStripline1);
@@ -1270,7 +1296,6 @@
     rearStripline2.position.set(-230, 0, 0);
     groupRearFeed.add(rearStripline2);
 
-    // Heavy Grounding Braid to Lab Stand
     const gndCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(-210, -55, 0),
       new THREE.Vector3(-200, -120, -50),
@@ -1280,16 +1305,13 @@
     groupRearFeed.add(gndBraid);
 
     // =========================================================================
-    // 11. CORE COAXIAL ELECTRODES (Horizontal Axis along X!)
-    // Accelerates from left (-X) to right (+X)!
+    // 11. CORE COAXIAL ELECTRODES (Horizontal along X)
     // =========================================================================
-    // Breech base plate (OFHC Copper mounting ring at X = -90)
     const breechPlate = new THREE.Mesh(new THREE.CylinderGeometry(52, 52, 12, 48), matCopper);
     breechPlate.rotation.z = Math.PI / 2;
     breechPlate.position.set(-90, 0, 0);
     groupCathode.add(breechPlate);
 
-    // Hexagonal Boron Nitride (h-BN) Insulator Sleeve with 30° Knife-Edge Lip
     const hbnSleeve = new THREE.Mesh(new THREE.CylinderGeometry(26, 26, 60, 48), matBoronNitride);
     hbnSleeve.rotation.z = Math.PI / 2;
     hbnSleeve.position.set(-55, 0, 0);
@@ -1309,7 +1331,6 @@
       desc: "Replaces traditional fragile Al₂O₃. Zero thermal shock cracking, zero oxygen liberation, and engineered 30° knife-edge prevents metal tracking."
     });
 
-    // Hollow Central Anode (W-25Re with Supersonic Chamfered Nozzle Tip)
     const anodeLength = 170;
     const anodeGeom = new THREE.CylinderGeometry(19, 19, anodeLength, 48, 1, true);
     anodeGeom.rotateZ(Math.PI / 2);
@@ -1317,13 +1338,11 @@
     anode.position.set(5, 0, 0);
     groupAnode.add(anode);
 
-    // Hollow Gas Expansion Bore (16mm ID)
     const anodeBore = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, anodeLength + 4, 32, 1, true), matTungsten);
     anodeBore.rotation.z = Math.PI / 2;
     anodeBore.position.set(5, 0, 0);
     groupAnode.add(anodeBore);
 
-    // Chamfered Supersonic de Laval Nozzle Muzzle Tip (X = +88mm)
     const nozzleTip = new THREE.Mesh(new THREE.CylinderGeometry(19, 11, 22, 48), matTungsten);
     nozzleTip.rotation.z = Math.PI / 2;
     nozzleTip.position.set(88, 0, 0);
@@ -1338,7 +1357,6 @@
       desc: "Machined from W-25Re with an internal supersonic de Laval convergent-divergent nozzle. Eliminates hydrogen embrittlement while surviving 100M+ pulse cycles."
     });
 
-    // 16 OFHC Copper Cathode Rods with Bullet-Nosed Tips (Surrounding the Anode)
     const numRods = 16;
     const pcdRadius = 46;
     const rodLength = 165;
@@ -1373,7 +1391,6 @@
 
     // =========================================================================
     // 12. 6-STAGE FARADAY INDUCTION STATOR (Extending from Port +X to the Right)
-    // EXACT MATCH TO "deca_reactor_stator_closeup.jpg"!
     // "the plasma sphere comes out from this side" -> Shoots through +X!
     // =========================================================================
     const ductLength = 340;
@@ -1382,7 +1399,6 @@
     duct.position.set(310, 0, 0);
     groupStator.add(duct);
 
-    // Stator Mounting Flange ("D.E.C.A. PHASE II • ISO 9001")
     const statorMntFlange = new THREE.Mesh(new THREE.CylinderGeometry(85, 85, 18, 48), matStainless);
     statorMntFlange.rotation.z = Math.PI / 2;
     statorMntFlange.position.set(155, 0, 0);
@@ -1391,8 +1407,8 @@
     const flTextCanvas = document.createElement('canvas');
     flTextCanvas.width = 512; flTextCanvas.height = 512;
     const ftCtx = flTextCanvas.getContext('2d');
-    ftCtx.fillStyle = '#dcdfe6'; ftCtx.fillRect(0,0,512,512);
-    ftCtx.fillStyle = '#1e293b'; ftCtx.font = 'bold 22px Arial, sans-serif';
+    ftCtx.fillStyle = '#94a3b8'; ftCtx.fillRect(0,0,512,512);
+    ftCtx.fillStyle = '#0f172a'; ftCtx.font = 'bold 22px Arial, sans-serif';
     ftCtx.textAlign = 'center';
     ftCtx.fillText('D.E.C.A. PHASE II', 256, 80);
     ftCtx.fillText('ISO 9001', 256, 440);
@@ -1402,7 +1418,6 @@
     flTextRing.position.set(164.2, 0, 0);
     groupStator.add(flTextRing);
 
-    // 6 Faraday Stator Pancake Induction Coils (S1 to S6)
     const statorCoils = [];
     for (let s = 0; s < 6; s++) {
       const xCoil = 200 + s * 46;
@@ -1420,7 +1435,6 @@
       band.position.set(xCoil, 0, 0);
       coilGroup.add(band);
 
-      // White Identification Tag (S1, S2, ..., S6)
       const tagCanvas = document.createElement('canvas');
       tagCanvas.width = 128; tagCanvas.height = 64;
       const tagCtx = tagCanvas.getContext('2d');
@@ -1433,7 +1447,6 @@
       tagMesh.position.set(xCoil, 0, 44);
       coilGroup.add(tagMesh);
 
-      // Frosted Liquid Nitrogen Cryogenic Feed Pipe with Icicles (Entering from bottom!)
       const cryoCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(xCoil, -38, 0),
         new THREE.Vector3(xCoil, -65, 8),
@@ -1456,7 +1469,6 @@
       }
     }
 
-    // Overhead Heavy Copper Busbars along Stator
     for (let b = 0; b < 3; b++) {
       const zB = -16 + b * 16;
       const busbar = new THREE.Mesh(new THREE.BoxGeometry(260, 4, 8), matCopper);
@@ -1608,9 +1620,7 @@
 
     // =========================================================================
     // 16. DYNAMIC PLASMA SIMULATION (Sheath -> Pinch -> Plasmoid Beam through +X)
-    // EXACT MATCH TO USER'S DIRECT REQUEST: "the plasma sphere comes out from this side"
     // =========================================================================
-    // 1) Coaxial Plasma Sheath sweeping along electrodes from X = -60 to X = +88
     const sheathGeom = new THREE.ConeGeometry(46, 35, 48, 1, true);
     sheathGeom.rotateZ(-Math.PI / 2);
     const sheathMat = new THREE.MeshBasicMaterial({
@@ -1623,7 +1633,6 @@
     const plasmaSheath = new THREE.Mesh(sheathGeom, sheathMat);
     scene.add(plasmaSheath);
 
-    // 2) Solar-Core Pinch at Nozzle Tip (X = +88mm)
     const pinchMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
     const plasmaPinch = new THREE.Mesh(new THREE.SphereGeometry(12, 32, 32), pinchMat);
     plasmaPinch.position.set(88, 0, 0);
@@ -1634,7 +1643,6 @@
     plasmaCorona.position.set(88, 0, 0);
     scene.add(plasmaCorona);
 
-    // 3) Ejected Plasmoid Vortex Sphere (Compact Toroid Shooting out through +X into Stator!)
     const plasmoidGroup = new THREE.Group();
     scene.add(plasmoidGroup);
 
@@ -1673,11 +1681,59 @@
     document.getElementById('btn-fire').addEventListener('click', triggerPulse);
 
     // =========================================================================
-    // 17. UI LISTENERS & CAMERA PRESETS
+    // 17. UI LISTENERS, CAMERA PRESETS & ISOLATE CORE MODE
     // =========================================================================
+    let isCoreIsolated = false;
+    const btnIsolate = document.getElementById('btn-isolate');
+
+    btnIsolate.addEventListener('click', () => {
+      isCoreIsolated = !isCoreIsolated;
+
+      if (isCoreIsolated) {
+        // HIDE ALL LAB DETAILS (Clean floating core reactor!)
+        groupFrame.visible = false;
+        groupCaps.visible = false;
+        groupRoughing.visible = false;
+        groupRearFeed.visible = false;
+        floor.visible = false;
+        floorGrid.visible = false;
+
+        document.getElementById('toggle-frame').checked = false;
+        document.getElementById('toggle-caps').checked = false;
+        document.getElementById('toggle-roughing').checked = false;
+        document.getElementById('toggle-rearfeed').checked = false;
+
+        btnIsolate.innerText = "🔬 SHOW ALL LAB DETAILS (Stand, Caps, Pumps)";
+        btnIsolate.classList.add('isolated');
+
+        // Smoothly zoom in to frame the isolated core
+        setCamTarget(new THREE.Vector3(120, 20, 380), new THREE.Vector3(80, 0, 0));
+      } else {
+        // RESTORE ALL LAB DETAILS
+        groupFrame.visible = true;
+        groupCaps.visible = true;
+        groupRoughing.visible = true;
+        groupRearFeed.visible = true;
+        floor.visible = true;
+        floorGrid.visible = true;
+
+        document.getElementById('toggle-frame').checked = true;
+        document.getElementById('toggle-caps').checked = true;
+        document.getElementById('toggle-roughing').checked = true;
+        document.getElementById('toggle-rearfeed').checked = true;
+
+        btnIsolate.innerText = "✨ ISOLATE CORE (Remove All Lab Details)";
+        btnIsolate.classList.remove('isolated');
+
+        // Reset camera back to lab overview
+        setCamTarget(new THREE.Vector3(240, 180, 520), new THREE.Vector3(80, 0, 0));
+      }
+    });
+
     document.getElementById('toggle-frame').addEventListener('change', e => groupFrame.visible = e.target.checked);
     document.getElementById('toggle-caps').addEventListener('change', e => groupCaps.visible = e.target.checked);
     document.getElementById('toggle-roughing').addEventListener('change', e => groupRoughing.visible = e.target.checked);
+    document.getElementById('toggle-rearfeed').addEventListener('change', e => groupRearFeed.visible = e.target.checked);
     document.getElementById('toggle-chamber').addEventListener('change', e => groupChamber.visible = e.target.checked);
     document.getElementById('toggle-cathode').addEventListener('change', e => groupCathode.visible = e.target.checked);
     document.getElementById('toggle-anode').addEventListener('change', e => groupAnode.visible = e.target.checked);
@@ -1719,17 +1775,18 @@
       speedVal.innerText = spd === 1 ? "10% Slow-Mo" : (spd === 10 ? "50 Hz Real-Time" : `${spd * 10}% Speed`);
     });
 
+    // Calibrated Lighting Brightness Slider
     const brightSlider = document.getElementById('bright-slider');
     const brightVal = document.getElementById('bright-val');
     brightSlider.addEventListener('input', e => {
       const b = e.target.value / 100;
       brightVal.innerText = `${e.target.value}%`;
-      ambientLight.intensity = 1.4 * b;
-      hemiLight.intensity = 2.0 * b;
-      keyLight.intensity = 3.2 * b;
-      fillLight.intensity = 1.8 * b;
-      frontViewLight.intensity = 1.6 * b;
-      renderer.toneMappingExposure = 1.30 * Math.sqrt(b);
+      ambientLight.intensity = 0.25 * b;
+      hemiLight.intensity = 0.35 * b;
+      keyLight.intensity = 1.25 * b;
+      fillLight.intensity = 0.45 * b;
+      frontViewLight.intensity = 0.40 * b;
+      renderer.toneMappingExposure = 0.88 * Math.sqrt(b);
     });
 
     let isTweeningCam = false;
@@ -1745,25 +1802,21 @@
     // Camera Presets
     document.getElementById('cam-front').addEventListener('click', () => {
       stopTour();
-      // Directly facing the front CF 150 viewport at +Z
       setCamTarget(new THREE.Vector3(0, 15, 340), new THREE.Vector3(0, 0, 0));
     });
 
     document.getElementById('cam-stator').addEventListener('click', () => {
       stopTour();
-      // Tight macro angle on the 6-stage Faraday stator coils where the plasma shoots through!
       setCamTarget(new THREE.Vector3(340, 90, 180), new THREE.Vector3(300, 0, 0));
     });
 
     document.getElementById('cam-side').addEventListener('click', () => {
       stopTour();
-      // Side CAD profile view
       setCamTarget(new THREE.Vector3(80, 120, 500), new THREE.Vector3(80, 0, 0));
     });
 
     document.getElementById('cam-bore').addEventListener('click', () => {
       stopTour();
-      // Looking directly down the electrode bore (Replicating deca_reactor_lab_photoreal.jpg)
       setCamTarget(new THREE.Vector3(-320, 0, 0), new THREE.Vector3(0, 0, 0));
     });
 
