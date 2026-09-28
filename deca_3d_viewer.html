@@ -503,7 +503,7 @@
       <input type="checkbox" id="toggle-stator" class="toggle-checkbox" checked>
     </label>
     <label class="layer-toggle">
-      <span>Decaborane Boiler (Polyimide Port 3)</span>
+      <span>Decaborane Boiler (Polyimide Port +Y)</span>
       <input type="checkbox" id="toggle-fuel" class="toggle-checkbox" checked>
     </label>
     <label class="layer-toggle">
@@ -514,7 +514,7 @@
     <div class="slider-container">
       <div class="slider-label">
         <span>Chamber CAD Cutaway Mode</span>
-        <span id="cutaway-val">90° Cutaway</span>
+        <span id="cutaway-val">90° CAD Cutaway</span>
       </div>
       <input type="range" id="cutaway-slider" class="slider-input" min="0" max="2" step="1" value="1">
     </div>
@@ -546,7 +546,7 @@
         <button class="btn-cam" id="cam-front">🎯 Front Viewport</button>
         <button class="btn-cam" id="cam-stator">🌀 Stator Beam</button>
         <button class="btn-cam" id="cam-side">🔬 Side CAD Profile</button>
-        <button class="btn-cam" id="cam-reset">🎥 Reset Orbit</button>
+        <button class="btn-cam" id="cam-bore">🔭 Electrode Bore</button>
       </div>
 
       <button class="btn" id="btn-show-photos" style="margin-top:6px; font-size:0.75rem; background:#0f172a; border-color:#38bdf8;">
@@ -570,11 +570,11 @@
   <!-- Guided Tour Subtitle Bar -->
   <div id="tour-hud">
     <div class="tour-header">
-      <div class="tour-title" id="tour-step-title">🎬 1. Front Viewport & Concentric Electrodes</div>
+      <div class="tour-title" id="tour-step-title">🎬 1. Front Viewport & Chamber Profile</div>
       <div class="tour-step-counter" id="tour-step-count">STAGE 1 / 7</div>
     </div>
     <div class="tour-body" id="tour-step-desc">
-      Looking directly through the CF 150 fused quartz viewport: The 16 OFHC copper cathode rods surround the central hollow W-25Re anode, backed by the white h-BN insulator sleeve.
+      Looking into the 316LN stainless steel 6-way cross vacuum chamber: The coaxial electrodes accelerate the plasma from left to right (+X), pinching at the nozzle and shooting into the Faraday stator!
     </div>
     <div class="tour-progress-bar">
       <div class="tour-progress-fill" id="tour-progress"></div>
@@ -607,12 +607,12 @@
   <!-- Bottom-Right Status Bar -->
   <div class="hud-panel" id="status-bar">
     <div class="status-dot"></div>
-    <span>Ultra-Realistic PBR Studio Engine • Dynamic Plasmoid Beam • 6-Stage Faraday Stator</span>
+    <span>Ultra-Realistic PBR Studio Engine • Plasmoid Beam (+X) • 6-Stage Faraday Stator</span>
   </div>
 
   <script>
     // =========================================================================
-    // 1. PROCEDURAL PBR TEXTURES GENERATOR (Fine Brushed Metals & Frost)
+    // 1. PROCEDURAL PBR TEXTURES (Fine Brushed Metals, Lathe Grooves, Frost)
     // =========================================================================
     function createBrushedMetalTexture(width, height, isCopper = false) {
       const canvas = document.createElement('canvas');
@@ -673,10 +673,9 @@
       canvas.height = 256;
       const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = '#b45309'; // Golden amber
+      ctx.fillStyle = '#b45309';
       ctx.fillRect(0, 0, 256, 256);
 
-      // Horizontal tape seams
       ctx.strokeStyle = '#78350f';
       ctx.lineWidth = 3;
       for (let y = 0; y < 256; y += 48) {
@@ -685,7 +684,6 @@
         ctx.lineTo(256, y);
         ctx.stroke();
 
-        // Subtle specular highlight on seam edge
         ctx.strokeStyle = '#fcd34d';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -709,7 +707,6 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, 256, 256);
 
-      // White crystalline speckles
       for (let i = 0; i < 6000; i++) {
         const x = Math.random() * 256;
         const y = Math.random() * 256;
@@ -734,14 +731,13 @@
     const texFrost = createIceFrostTexture();
 
     // =========================================================================
-    // 2. THREE.JS ENGINE INITIALIZATION WITH STUDIO TONE MAPPING
+    // 2. THREE.JS INITIALIZATION WITH TONE MAPPING
     // =========================================================================
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 8000);
-    // Default view: Isometric view of entire testbed
-    camera.position.set(480, 240, 520);
+    camera.position.set(240, 180, 520);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -757,11 +753,11 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.maxDistance = 2600;
-    controls.minDistance = 50;
-    controls.target.set(60, -10, 0);
+    controls.minDistance = 40;
+    controls.target.set(80, 0, 0);
 
     // =========================================================================
-    // 3. PHOTOREALISTIC STUDIO ENVIRONMENT MAP (Equirectangular Softboxes)
+    // 3. PHOTOREALISTIC STUDIO ENVIRONMENT MAP
     // =========================================================================
     function createStudioEnvironment() {
       const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -770,7 +766,7 @@
       const envScene = new THREE.Scene();
       envScene.background = new THREE.Color(0x070b14);
 
-      // Gradient Key Softbox
+      // Key Softbox
       const sbKey = new THREE.Mesh(new THREE.PlaneGeometry(800, 1000), new THREE.MeshBasicMaterial({ color: 0xffffff }));
       sbKey.position.set(700, 500, 500);
       sbKey.lookAt(0, 0, 0);
@@ -788,7 +784,7 @@
       sbRim.lookAt(0, 0, 0);
       envScene.add(sbRim);
 
-      // Warm Ground Floor Reflection Panel
+      // Ground Floor Reflection Panel
       const sbFloor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshBasicMaterial({ color: 0x1e293b }));
       sbFloor.position.set(0, -600, 0);
       sbFloor.rotation.x = -Math.PI / 2;
@@ -800,16 +796,16 @@
     createStudioEnvironment();
 
     // =========================================================================
-    // 4. POSTPROCESSING (UnrealBloomPass for Realistic Optical Glow)
+    // 4. POSTPROCESSING (UnrealBloomPass)
     // =========================================================================
     let composer, bloomPass;
     try {
       const renderPass = new THREE.RenderPass(scene, camera);
       bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        0.85, // Strength
-        0.35, // Radius
-        0.75  // Threshold
+        0.85,
+        0.35,
+        0.75
       );
       composer = new THREE.EffectComposer(renderer);
       composer.addPass(renderPass);
@@ -839,23 +835,22 @@
     fillLight.position.set(-500, 350, -400);
     scene.add(fillLight);
 
-    const frontViewLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    const frontViewLight = new THREE.DirectionalLight(0xffffff, 1.6);
     frontViewLight.position.set(0, 50, 600);
     scene.add(frontViewLight);
 
-    // Dynamic Plasma Discharge Point Lights
+    // Dynamic Plasma Discharge Lights
     const plasmaCoreLight = new THREE.PointLight(0xa855f7, 0, 900);
-    plasmaCoreLight.position.set(0, 0, 0);
+    plasmaCoreLight.position.set(88, 0, 0);
     scene.add(plasmaCoreLight);
 
     const plasmoidBeamLight = new THREE.PointLight(0x38bdf8, 0, 800);
-    plasmoidBeamLight.position.set(160, 0, 0);
+    plasmoidBeamLight.position.set(200, 0, 0);
     scene.add(plasmoidBeamLight);
 
     // =========================================================================
     // 6. PHOTOREALISTIC PBR MATERIALS
     // =========================================================================
-    // Polished AISI 316LN Stainless Steel (High Specular, Brushed Map)
     const matStainless = new THREE.MeshStandardMaterial({
       color: 0xf1f5f9,
       metalness: 0.96,
@@ -863,7 +858,6 @@
       roughnessMap: texStainless
     });
 
-    // Flange Sealing Face (Machined Lathe Grooves)
     const matFlangeFace = new THREE.MeshStandardMaterial({
       color: 0xe2e8f0,
       metalness: 0.98,
@@ -871,7 +865,6 @@
       roughnessMap: texFlangeLathe
     });
 
-    // Heavy OFHC Copper (Brushed Specular Orange-Gold)
     const matCopper = new THREE.MeshStandardMaterial({
       color: 0xc86a3b,
       metalness: 0.96,
@@ -879,14 +872,12 @@
       roughnessMap: texCopper
     });
 
-    // Tungsten-Rhenium Anode Alloy (Deep Precision Tool Steel Sheen)
     const matTungsten = new THREE.MeshStandardMaterial({
       color: 0x8892a0,
       metalness: 0.92,
       roughness: 0.18
     });
 
-    // Ultra-Pure Hexagonal Boron Nitride (h-BN) Insulator
     const matBoronNitride = new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       metalness: 0.05,
@@ -897,7 +888,6 @@
       emissiveIntensity: 0.08
     });
 
-    // Translucent Silicon Nitride (Si3N4) Flight Duct
     const matCeramicDuct = new THREE.MeshPhysicalMaterial({
       color: 0xf8fafc,
       transparent: true,
@@ -907,7 +897,7 @@
       clearcoatRoughness: 0.08
     });
 
-    // Fused Quartz Front Viewport Window (Crystal Clear, Zero-Distortion)
+    // Crystal clear fused quartz window (ZERO DISTORTION)
     const matViewportGlass = new THREE.MeshPhysicalMaterial({
       color: 0xe0f2fe,
       transparent: true,
@@ -918,15 +908,12 @@
       reflectivity: 0.92
     });
 
-    // Viewport Anti-Reflective Purple Rim Sheen
     const matAntiReflective = new THREE.MeshBasicMaterial({
       color: 0x818cf8,
       transparent: true,
-      opacity: 0.45,
-      wireframe: false
+      opacity: 0.45
     });
 
-    // Polyimide (Kapton) Golden Heating Jacket
     const matKaptonHeater = new THREE.MeshStandardMaterial({
       color: 0xd97706,
       metalness: 0.75,
@@ -936,7 +923,6 @@
       emissiveIntensity: 0.2
     });
 
-    // Frosted LN2 Cryogenic Pipe (Ice Frost Condensation)
     const matFrostedLN2 = new THREE.MeshStandardMaterial({
       color: 0xf8fafc,
       roughness: 0.88,
@@ -945,7 +931,6 @@
       bumpScale: 0.4
     });
 
-    // 80/20 Structural Extruded Aluminum Frame
     const mat8020 = new THREE.MeshStandardMaterial({
       color: 0xd1d5db,
       metalness: 0.88,
@@ -971,19 +956,17 @@
       clearcoat: 1.0
     });
 
-    // Chamber Cutaway Interior Metal Wall (Thick 8mm Solid Cross-Section)
     const matCutawayEdge = new THREE.MeshStandardMaterial({
       color: 0x94a3b8,
       metalness: 0.90,
       roughness: 0.35
     });
 
-    // Radiation Shield
     const matLead = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.5 });
     const matHDPE = new THREE.MeshPhysicalMaterial({ color: 0x0284c7, transparent: true, opacity: 0.55, roughness: 0.3 });
 
     // =========================================================================
-    // 7. COMPONENT HIERARCHY & GROUPS
+    // 7. COMPONENT HIERARCHY
     // =========================================================================
     const reactorRoot = new THREE.Group();
     scene.add(reactorRoot);
@@ -1018,7 +1001,7 @@
 
     groupShield.visible = false;
     groupChamberSolid.visible = false;
-    groupChamberCutaway.visible = true; // Default: 90° CAD cutaway view
+    groupChamberCutaway.visible = true; // 90° CAD cutaway view
 
     const interactiveObjects = [];
     function registerInteractive(mesh, data) {
@@ -1026,7 +1009,6 @@
       interactiveObjects.push(mesh);
     }
 
-    // Helper: Precision Hex Bolt with Washer
     function createHexBolt(radius = 3.5, height = 7) {
       const hexGeom = new THREE.CylinderGeometry(radius, radius, height, 6);
       const washerGeom = new THREE.CylinderGeometry(radius * 1.45, radius * 1.45, 1.2, 16);
@@ -1038,16 +1020,16 @@
       return boltGroup;
     }
 
-    function addFlangeHexBolts(parent, radius, count, pos, axis = 'Z') {
+    function addFlangeHexBolts(parent, radius, count, pos, axis = 'X') {
       for (let i = 0; i < count; i++) {
         const angle = (i / count) * Math.PI * 2;
         const bolt = createHexBolt(3.2, 7);
-        if (axis === 'Z') {
-          bolt.rotation.x = Math.PI / 2;
-          bolt.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, pos);
-        } else if (axis === 'X') {
+        if (axis === 'X') {
           bolt.rotation.z = Math.PI / 2;
           bolt.position.set(pos, Math.cos(angle) * radius, Math.sin(angle) * radius);
+        } else if (axis === 'Z') {
+          bolt.rotation.x = Math.PI / 2;
+          bolt.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, pos);
         } else if (axis === 'Y') {
           bolt.position.set(Math.cos(angle) * radius, pos, Math.sin(angle) * radius);
         }
@@ -1056,9 +1038,8 @@
     }
 
     // =========================================================================
-    // 8. LABORATORY BENCHMARK: 80/20 STRUCTURAL STAND & LOWER DECK
+    // 8. 80/20 STRUCTURAL LAB FRAME & STAND
     // =========================================================================
-    // Anti-static cleanroom epoxy floor
     const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.35, metalness: 0.25 });
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(3500, 3500), floorMat);
     floor.rotation.x = -Math.PI / 2;
@@ -1070,36 +1051,35 @@
     floorGrid.position.y = -349.5;
     scene.add(floorGrid);
 
-    // 80/20 Optical Breadboard Table Top (Anodized Aluminum)
-    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(520, 22, 420), mat8020);
-    tableTop.position.set(60, -85, 0);
+    // Optical Breadboard Table Top (Centered around reactor)
+    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(680, 22, 420), mat8020);
+    tableTop.position.set(80, -85, 0);
     tableTop.receiveShadow = true;
     groupFrame.add(tableTop);
 
-    // 80/20 Aluminum Profile Legs
+    // 80/20 Legs
     const legCoords = [
-      [-160, -215, -170], [280, -215, -170],
-      [-160, -215, 170], [280, -215, 170]
+      [-220, -215, -170], [380, -215, -170],
+      [-220, -215, 170], [380, -215, 170]
     ];
     legCoords.forEach(pos => {
       const leg = new THREE.Mesh(new THREE.BoxGeometry(28, 240, 28), mat8020);
       leg.position.set(...pos);
       groupFrame.add(leg);
 
-      // Leveling pad
       const foot = new THREE.Mesh(new THREE.CylinderGeometry(20, 22, 14, 16), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.9 }));
       foot.position.set(pos[0], -342, pos[2]);
       groupFrame.add(foot);
     });
 
-    // Lower Equipment Deck Shelf
-    const lowerShelf = new THREE.Mesh(new THREE.BoxGeometry(460, 12, 360), mat8020);
-    lowerShelf.position.set(60, -275, 0);
+    // Lower Deck
+    const lowerShelf = new THREE.Mesh(new THREE.BoxGeometry(600, 12, 360), mat8020);
+    lowerShelf.position.set(80, -275, 0);
     groupFrame.add(lowerShelf);
 
-    // Front Crossbeam with Authentic "80/20" Label
-    const frontBeam = new THREE.Mesh(new THREE.BoxGeometry(460, 28, 28), mat8020);
-    frontBeam.position.set(60, -96, 170);
+    // Front Beam with "80/20" Label
+    const frontBeam = new THREE.Mesh(new THREE.BoxGeometry(600, 28, 28), mat8020);
+    frontBeam.position.set(80, -96, 170);
     groupFrame.add(frontBeam);
 
     const labelCanvas = document.createElement('canvas');
@@ -1110,7 +1090,7 @@
     lCtx.fillText('80/20', 60, 46);
     const labelTex = new THREE.CanvasTexture(labelCanvas);
     const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), new THREE.MeshBasicMaterial({ map: labelTex }));
-    labelMesh.position.set(60, -96, 185);
+    labelMesh.position.set(80, -96, 185);
     groupFrame.add(labelMesh);
 
     registerInteractive(tableTop, {
@@ -1122,22 +1102,20 @@
       desc: "Industrial optical-grade unistrut test stand with rubber vibration-damping leveling feet. Houses the capacitor bank and roughing pump on the lower shelf."
     });
 
-    // 100 kJ Pulse Capacitor Bank (4 Blue Maxwell-Style Cans with Porcelain Bushings)
+    // 100 kJ Pulse Capacitor Bank (4 Blue Maxwell-Style Cans)
     for (let c = 0; c < 4; c++) {
       const capCan = new THREE.Mesh(new THREE.BoxGeometry(68, 95, 75), matCapacitorBlue);
-      const xCap = -30 + (c % 2) * 160;
+      const xCap = -40 + (c % 2) * 170;
       const zCap = -70 + Math.floor(c / 2) * 120;
       capCan.position.set(xCap, -220, zCap);
       groupCaps.add(capCan);
 
-      // Ribbed Ceramic Porcelain Bushings
       for (let r = 0; r < 3; r++) {
         const rib = new THREE.Mesh(new THREE.CylinderGeometry(11, 11, 4, 16), matBushing);
         rib.position.set(xCap, -165 + r * 6, zCap);
         groupCaps.add(rib);
       }
 
-      // Copper Terminal Stud & Nut
       const stud = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 12, 8), matCopper);
       stud.position.set(xCap, -145, zCap);
       groupCaps.add(stud);
@@ -1154,36 +1132,33 @@
       }
     }
 
-    // Heavy Copper Busbar Jumpers between Capacitors
-    const busbar1 = new THREE.Mesh(new THREE.BoxGeometry(160, 6, 18), matCopper);
-    busbar1.position.set(50, -142, -70);
+    const busbar1 = new THREE.Mesh(new THREE.BoxGeometry(170, 6, 18), matCopper);
+    busbar1.position.set(45, -142, -70);
     groupCaps.add(busbar1);
 
-    const busbar2 = new THREE.Mesh(new THREE.BoxGeometry(160, 6, 18), matCopper);
-    busbar2.position.set(50, -142, 50);
+    const busbar2 = new THREE.Mesh(new THREE.BoxGeometry(170, 6, 18), matCopper);
+    busbar2.position.set(45, -142, 50);
     groupCaps.add(busbar2);
 
     // =========================================================================
-    // 9. SOLID 316LN STAINLESS STEEL 6-WAY CROSS VACUUM VESSEL
+    // 9. SOLID 316LN STAINLESS STEEL 6-WAY CROSS (Oriented along X-axis!)
     // =========================================================================
-    // Real 316LN Stainless Vessel Body (Electropolished Mirror Finish)
-    function createFlangeRing(radius, thickness, pos, axis = 'Z', boltCount = 16) {
+    function createFlangeRing(radius, thickness, pos, axis = 'X', boltCount = 16) {
       const flangeGeom = new THREE.CylinderGeometry(radius + 20, radius + 20, thickness, 48);
-      if (axis === 'Z') flangeGeom.rotateX(Math.PI / 2);
       if (axis === 'X') flangeGeom.rotateZ(Math.PI / 2);
+      if (axis === 'Z') flangeGeom.rotateX(Math.PI / 2);
       const flange = new THREE.Mesh(flangeGeom, matStainless);
-      if (axis === 'Z') flange.position.set(0, 0, pos);
-      if (axis === 'Y') flange.position.set(0, pos, 0);
       if (axis === 'X') flange.position.set(pos, 0, 0);
+      if (axis === 'Y') flange.position.set(0, pos, 0);
+      if (axis === 'Z') flange.position.set(0, 0, pos);
 
-      // Flange Face Chamfer Ring
       const faceRing = new THREE.Mesh(new THREE.RingGeometry(radius - 5, radius + 19, 48), matFlangeFace);
-      if (axis === 'Z') {
-        faceRing.position.set(0, 0, pos + (pos > 0 ? thickness / 2 + 0.1 : -thickness / 2 - 0.1));
-        if (pos < 0) faceRing.rotateY(Math.PI);
-      } else if (axis === 'X') {
+      if (axis === 'X') {
         faceRing.rotation.y = Math.PI / 2;
         faceRing.position.set(pos + (pos > 0 ? thickness / 2 + 0.1 : -thickness / 2 - 0.1), 0, 0);
+      } else if (axis === 'Z') {
+        faceRing.position.set(0, 0, pos + (pos > 0 ? thickness / 2 + 0.1 : -thickness / 2 - 0.1));
+        if (pos < 0) faceRing.rotateY(Math.PI);
       } else if (axis === 'Y') {
         faceRing.rotation.x = Math.PI / 2;
         faceRing.position.set(0, pos + (pos > 0 ? thickness / 2 + 0.1 : -thickness / 2 - 0.1), 0);
@@ -1196,7 +1171,7 @@
       return fGroup;
     }
 
-    // 1) FULL SOLID VESSEL (Real Exterior)
+    // Solid Chamber Exterior
     const solidCrossX = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 300, 48), matStainless);
     solidCrossX.rotation.z = Math.PI / 2;
     groupChamberSolid.add(solidCrossX);
@@ -1208,42 +1183,41 @@
     solidCrossZ.rotation.x = Math.PI / 2;
     groupChamberSolid.add(solidCrossZ);
 
-    // 2) 90° CAD CUTAWAY VESSEL (Reveals interior with real 8mm solid cut metal wall thickness!)
-    // Semi-cylinders leaving the front-right quadrant open for pristine inspection!
-    const cutCylZ = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 290, 48, 1, false, Math.PI * 0.5, Math.PI * 1.5), matStainless);
-    cutCylZ.rotation.x = Math.PI / 2;
-    groupChamberCutaway.add(cutCylZ);
-
-    const cutCylY = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 290, 48, 1, false, Math.PI * 0.5, Math.PI * 1.5), matStainless);
-    groupChamberCutaway.add(cutCylY);
-
+    // 90° CAD Cutaway (Front-Top Quadrant Open for Crystal Clear Inspection)
     const cutCylX = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 290, 48, 1, false, Math.PI * 0.5, Math.PI * 1.5), matStainless);
     cutCylX.rotation.z = Math.PI / 2;
     groupChamberCutaway.add(cutCylX);
 
-    // Solid cut metal edge walls (8mm thickness CAD representation)
-    const cutEdgeWallZ = new THREE.Mesh(new THREE.BoxGeometry(8, 140, 280), matCutawayEdge);
-    cutEdgeWallZ.position.set(-4, 0, 0);
+    const cutCylY = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 290, 48, 1, false, Math.PI * 0.5, Math.PI * 1.5), matStainless);
+    groupChamberCutaway.add(cutCylY);
+
+    const cutCylZ = new THREE.Mesh(new THREE.CylinderGeometry(75, 75, 290, 48, 1, false, Math.PI * 0.5, Math.PI * 1.5), matStainless);
+    cutCylZ.rotation.x = Math.PI / 2;
+    groupChamberCutaway.add(cutCylZ);
+
+    // Solid cut metal edge walls (8mm thickness representation)
+    const cutEdgeWallX = new THREE.Mesh(new THREE.BoxGeometry(280, 8, 140), matCutawayEdge);
+    cutEdgeWallX.position.set(0, -4, 0);
+    groupChamberCutaway.add(cutEdgeWallX);
+
+    const cutEdgeWallZ = new THREE.Mesh(new THREE.BoxGeometry(140, 140, 8), matCutawayEdge);
+    cutEdgeWallZ.position.set(0, 0, -4);
     groupChamberCutaway.add(cutEdgeWallZ);
 
-    const cutEdgeWallY = new THREE.Mesh(new THREE.BoxGeometry(280, 8, 140), matCutawayEdge);
-    cutEdgeWallY.position.set(0, -4, 0);
-    groupChamberCutaway.add(cutEdgeWallY);
-
     // CF Flanges on All 6 Ports
-    const flZFront = createFlangeRing(75, 20, 150, 'Z', 16); // Front Viewport Port (+Z)
-    const flZRear  = createFlangeRing(75, 20, -150, 'Z', 16); // Rear Breech Port (-Z)
-    const flYTop   = createFlangeRing(75, 20, 150, 'Y', 16); // Top Fuel Boiler Port (+Y)
-    const flYBot   = createFlangeRing(75, 20, -150, 'Y', 16); // Bottom Vacuum Gate Valve (+Y)
-    const flXRight = createFlangeRing(75, 20, 150, 'X', 16); // Right Stator Output Port (+X)
-    const flXLeft  = createFlangeRing(75, 20, -150, 'X', 16); // Left Auxiliary Diagnostic Port (-X)
+    const flXLeft  = createFlangeRing(75, 20, -150, 'X', 16); // Left Port: Breech Feedthrough (-X)
+    const flXRight = createFlangeRing(75, 20, 150, 'X', 16);  // Right Port: Stator Output (+X)
+    const flYTop   = createFlangeRing(75, 20, 150, 'Y', 16);  // Top Port: Decaborane Boiler (+Y)
+    const flYBot   = createFlangeRing(75, 20, -150, 'Y', 16);  // Bottom Port: Gate Valve & Turbopump (-Y)
+    const flZFront = createFlangeRing(75, 20, 150, 'Z', 16);  // Front Port: Quartz Viewport (+Z)
+    const flZRear  = createFlangeRing(75, 20, -150, 'Z', 16);  // Rear Port: Diagnostic Laser (-Z)
 
-    groupChamber.add(flZFront);
-    groupChamber.add(flZRear);
+    groupChamber.add(flXLeft);
+    groupChamber.add(flXRight);
     groupChamber.add(flYTop);
     groupChamber.add(flYBot);
-    groupChamber.add(flXRight);
-    groupChamber.add(flXLeft);
+    groupChamber.add(flZFront);
+    groupChamber.add(flZRear);
 
     // FRONT VIEWPORT (Direct Optical Window matching Benchmark Photo!)
     const viewportWindow = new THREE.Mesh(new THREE.CylinderGeometry(62, 62, 10, 48), matViewportGlass);
@@ -1251,12 +1225,10 @@
     viewportWindow.position.set(0, 0, 155);
     groupChamber.add(viewportWindow);
 
-    // Anti-reflective coating rim ring (subtle purple/blue sheen)
     const arRim = new THREE.Mesh(new THREE.TorusGeometry(61, 1.5, 16, 48), matAntiReflective);
     arRim.position.set(0, 0, 160);
     groupChamber.add(arRim);
 
-    // Stainless Viewport Retaining Clamp Ring
     const vpRetainer = new THREE.Mesh(new THREE.TorusGeometry(68, 5, 16, 48), matStainless);
     vpRetainer.position.set(0, 0, 158);
     groupChamber.add(vpRetainer);
@@ -1271,61 +1243,61 @@
     });
 
     // =========================================================================
-    // 10. REAR HIGH-VOLTAGE TRANSMISSION & BREECH FEEDTHROUGH (Port -Z)
+    // 10. REAR HIGH-VOLTAGE PULSE BREECH FEEDTHROUGH (Port -X on the Left)
     // =========================================================================
-    // Alumina Ceramic High-Voltage Standoff Bushings
     for (let b = 0; b < 4; b++) {
       const angle = (b / 4) * Math.PI * 2 + Math.PI / 4;
-      const xB = Math.cos(angle) * 45;
-      const yB = Math.sin(angle) * 45;
+      const yB = Math.cos(angle) * 45;
+      const zB = Math.sin(angle) * 45;
 
       const standoff = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 55, 24), matBoronNitride);
-      standoff.rotation.x = Math.PI / 2;
-      standoff.position.set(xB, yB, -180);
+      standoff.rotation.z = Math.PI / 2;
+      standoff.position.set(-180, yB, zB);
       groupRearFeed.add(standoff);
 
       const stud = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 65, 16), matCopper);
-      stud.rotation.x = Math.PI / 2;
-      stud.position.set(xB, yB, -180);
+      stud.rotation.z = Math.PI / 2;
+      stud.position.set(-180, yB, zB);
       groupRearFeed.add(stud);
     }
 
-    // Heavy Low-Inductance Parallel Copper Stripline Plates
-    const rearStripline1 = new THREE.Mesh(new THREE.BoxGeometry(110, 110, 8), matCopper);
-    rearStripline1.position.set(0, 0, -210);
+    // Heavy Low-Inductance Parallel Copper Stripline Plates (Mounting cleanly on -X)
+    const rearStripline1 = new THREE.Mesh(new THREE.BoxGeometry(8, 110, 110), matCopper);
+    rearStripline1.position.set(-210, 0, 0);
     groupRearFeed.add(rearStripline1);
 
-    const rearStripline2 = new THREE.Mesh(new THREE.BoxGeometry(110, 110, 8), matCopper);
-    rearStripline2.position.set(0, 0, -230);
+    const rearStripline2 = new THREE.Mesh(new THREE.BoxGeometry(8, 110, 110), matCopper);
+    rearStripline2.position.set(-230, 0, 0);
     groupRearFeed.add(rearStripline2);
 
     // Heavy Grounding Braid to Lab Stand
     const gndCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0, -55, -210),
-      new THREE.Vector3(-60, -120, -190),
-      new THREE.Vector3(-140, -200, -170)
+      new THREE.Vector3(-210, -55, 0),
+      new THREE.Vector3(-200, -120, -50),
+      new THREE.Vector3(-180, -200, -120)
     ]);
     const gndBraid = new THREE.Mesh(new THREE.TubeGeometry(gndCurve, 20, 6, 12, false), matCopper);
     groupRearFeed.add(gndBraid);
 
     // =========================================================================
-    // 11. CORE COAXIAL ELECTRODES (Directly Centered in Chamber)
+    // 11. CORE COAXIAL ELECTRODES (Horizontal Axis along X!)
+    // Accelerates from left (-X) to right (+X)!
     // =========================================================================
-    // Breech base plate (OFHC Copper mounting ring)
+    // Breech base plate (OFHC Copper mounting ring at X = -90)
     const breechPlate = new THREE.Mesh(new THREE.CylinderGeometry(52, 52, 12, 48), matCopper);
-    breechPlate.rotation.x = Math.PI / 2;
-    breechPlate.position.set(0, 0, -90);
+    breechPlate.rotation.z = Math.PI / 2;
+    breechPlate.position.set(-90, 0, 0);
     groupCathode.add(breechPlate);
 
     // Hexagonal Boron Nitride (h-BN) Insulator Sleeve with 30° Knife-Edge Lip
     const hbnSleeve = new THREE.Mesh(new THREE.CylinderGeometry(26, 26, 60, 48), matBoronNitride);
-    hbnSleeve.rotation.x = Math.PI / 2;
-    hbnSleeve.position.set(0, 0, -55);
+    hbnSleeve.rotation.z = Math.PI / 2;
+    hbnSleeve.position.set(-55, 0, 0);
     groupInsulator.add(hbnSleeve);
 
     const hbnLip = new THREE.Mesh(new THREE.ConeGeometry(26, 12, 48), matBoronNitride);
-    hbnLip.rotation.x = -Math.PI / 2;
-    hbnLip.position.set(0, 0, -22);
+    hbnLip.rotation.z = -Math.PI / 2;
+    hbnLip.position.set(-22, 0, 0);
     groupInsulator.add(hbnLip);
 
     registerInteractive(hbnSleeve, {
@@ -1340,21 +1312,21 @@
     // Hollow Central Anode (W-25Re with Supersonic Chamfered Nozzle Tip)
     const anodeLength = 170;
     const anodeGeom = new THREE.CylinderGeometry(19, 19, anodeLength, 48, 1, true);
-    anodeGeom.rotateX(Math.PI / 2);
+    anodeGeom.rotateZ(Math.PI / 2);
     const anode = new THREE.Mesh(anodeGeom, matTungsten);
-    anode.position.set(0, 0, 5);
+    anode.position.set(5, 0, 0);
     groupAnode.add(anode);
 
     // Hollow Gas Expansion Bore (16mm ID)
     const anodeBore = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, anodeLength + 4, 32, 1, true), matTungsten);
-    anodeBore.rotation.x = Math.PI / 2;
-    anodeBore.position.set(0, 0, 5);
+    anodeBore.rotation.z = Math.PI / 2;
+    anodeBore.position.set(5, 0, 0);
     groupAnode.add(anodeBore);
 
-    // Chamfered Supersonic de Laval Nozzle Muzzle Tip (Z = +90mm)
+    // Chamfered Supersonic de Laval Nozzle Muzzle Tip (X = +88mm)
     const nozzleTip = new THREE.Mesh(new THREE.CylinderGeometry(19, 11, 22, 48), matTungsten);
-    nozzleTip.rotation.x = Math.PI / 2;
-    nozzleTip.position.set(0, 0, 92);
+    nozzleTip.rotation.z = Math.PI / 2;
+    nozzleTip.position.set(88, 0, 0);
     groupAnode.add(nozzleTip);
 
     registerInteractive(anode, {
@@ -1366,26 +1338,25 @@
       desc: "Machined from W-25Re with an internal supersonic de Laval convergent-divergent nozzle. Eliminates hydrogen embrittlement while surviving 100M+ pulse cycles."
     });
 
-    // 16 OFHC Copper Cathode Rods with Bullet-Nosed Tips (Concentric Array)
+    // 16 OFHC Copper Cathode Rods with Bullet-Nosed Tips (Surrounding the Anode)
     const numRods = 16;
-    const pcdRadius = 46; // Radius matching 92mm PCD
+    const pcdRadius = 46;
     const rodLength = 165;
     const rodGeom = new THREE.CylinderGeometry(4.2, 4.2, rodLength, 24);
-    rodGeom.rotateX(Math.PI / 2);
+    rodGeom.rotateZ(Math.PI / 2);
     const tipGeom = new THREE.SphereGeometry(4.2, 16, 16);
 
     for (let i = 0; i < numRods; i++) {
       const angle = (i / numRods) * Math.PI * 2;
-      const x = Math.cos(angle) * pcdRadius;
-      const y = Math.sin(angle) * pcdRadius;
+      const y = Math.cos(angle) * pcdRadius;
+      const z = Math.sin(angle) * pcdRadius;
 
       const rod = new THREE.Mesh(rodGeom, matCopper);
-      rod.position.set(x, y, 2.5);
+      rod.position.set(2.5, y, z);
       groupCathode.add(rod);
 
-      // Bullet-nosed rounded hemispherical tip
       const tip = new THREE.Mesh(tipGeom, matCopper);
-      tip.position.set(x, y, 85);
+      tip.position.set(84, y, z);
       groupCathode.add(tip);
 
       if (i === 0) {
@@ -1403,22 +1374,20 @@
     // =========================================================================
     // 12. 6-STAGE FARADAY INDUCTION STATOR (Extending from Port +X to the Right)
     // EXACT MATCH TO "deca_reactor_stator_closeup.jpg"!
-    // "the plasma sphere comes out from this side" -> +X axis!
+    // "the plasma sphere comes out from this side" -> Shoots through +X!
     // =========================================================================
-    // Stator Flight Tube (Translucent Silicon Nitride Ceramic / Quartz Tube)
     const ductLength = 340;
     const duct = new THREE.Mesh(new THREE.CylinderGeometry(20, 20, ductLength, 48, 1, true), matCeramicDuct);
     duct.rotation.z = Math.PI / 2;
     duct.position.set(310, 0, 0);
     groupStator.add(duct);
 
-    // Stator Mounting Flange with Laser-Etched Text Label
+    // Stator Mounting Flange ("D.E.C.A. PHASE II • ISO 9001")
     const statorMntFlange = new THREE.Mesh(new THREE.CylinderGeometry(85, 85, 18, 48), matStainless);
     statorMntFlange.rotation.z = Math.PI / 2;
     statorMntFlange.position.set(155, 0, 0);
     groupStator.add(statorMntFlange);
 
-    // Laser Text Ring on Flange Face ("D.E.C.A. PHASE II • ISO 9001")
     const flTextCanvas = document.createElement('canvas');
     flTextCanvas.width = 512; flTextCanvas.height = 512;
     const ftCtx = flTextCanvas.getContext('2d');
@@ -1439,14 +1408,13 @@
       const xCoil = 200 + s * 46;
       const coilGroup = new THREE.Group();
 
-      // Multi-turn wound copper pancake coil
-      const coil = new THREE.Mesh(new THREE.TorusGeometry(32, 6.5, 24, 48), matCopper);
+      const coilMat = matCopper.clone();
+      const coil = new THREE.Mesh(new THREE.TorusGeometry(32, 6.5, 24, 48), coilMat);
       coil.rotation.y = Math.PI / 2;
       coil.position.set(xCoil, 0, 0);
       coilGroup.add(coil);
       statorCoils.push(coil);
 
-      // Insulation casing band around coil
       const band = new THREE.Mesh(new THREE.TorusGeometry(40, 3.5, 16, 48), new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 }));
       band.rotation.y = Math.PI / 2;
       band.position.set(xCoil, 0, 0);
@@ -1488,7 +1456,7 @@
       }
     }
 
-    // Overhead Heavy Copper Busbars along the Stator Assembly
+    // Overhead Heavy Copper Busbars along Stator
     for (let b = 0; b < 3; b++) {
       const zB = -16 + b * 16;
       const busbar = new THREE.Mesh(new THREE.BoxGeometry(260, 4, 8), matCopper);
@@ -1498,20 +1466,16 @@
 
     // =========================================================================
     // 13. TOP DECABORANE BOILER & SWAGELOK MANIFOLD (Port +Y)
-    // EXACT MATCH TO "deca_reactor_lab_photoreal.jpg"!
     // =========================================================================
-    // Cylindrical Sublimation Boiler Cell
     const boiler = new THREE.Mesh(new THREE.CylinderGeometry(28, 28, 75, 32), matKaptonHeater);
     boiler.position.set(0, 220, 0);
     groupFuel.add(boiler);
 
-    // Stainless Top Flange & Clamp Rings
     const boilerTop = new THREE.Mesh(new THREE.CylinderGeometry(36, 36, 12, 32), matStainless);
     boilerTop.position.set(0, 262, 0);
     groupFuel.add(boilerTop);
     addFlangeHexBolts(groupFuel, 29, 6, 268, 'Y');
 
-    // Dual Stainless Dial Pressure Gauges with Precision Faces
     function createDialGauge(x, y, z) {
       const dialCase = new THREE.Mesh(new THREE.CylinderGeometry(11, 11, 8, 32), matStainless);
       dialCase.rotation.x = Math.PI / 2;
@@ -1527,10 +1491,8 @@
       dCtx.font = 'bold 13px sans-serif'; dCtx.fillStyle = '#000'; dCtx.textAlign = 'center';
       dCtx.fillText('SWAGELOK', 64, 45);
       dCtx.fillText('mbar', 64, 92);
-      // Redline zone
       dCtx.strokeStyle = '#ef4444'; dCtx.lineWidth = 4;
       dCtx.beginPath(); dCtx.arc(64,64,48,Math.PI*1.5, Math.PI*2); dCtx.stroke();
-      // Dial needle
       dCtx.strokeStyle = '#0f172a'; dCtx.lineWidth = 2.5;
       dCtx.beginPath(); dCtx.moveTo(64,64); dCtx.lineTo(95,50); dCtx.stroke();
 
@@ -1543,7 +1505,6 @@
     createDialGauge(42, 245, 14);
     createDialGauge(42, 245, -14);
 
-    // Braided Stainless Steel Fuel Delivery Tube with 90° Mandrel Bends
     const fuelTubeCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0, 180, 0),
       new THREE.Vector3(0, 145, 18),
@@ -1552,7 +1513,6 @@
     const fuelTube = new THREE.Mesh(new THREE.TubeGeometry(fuelTubeCurve, 20, 4.5, 12, false), matStainless);
     groupFuel.add(fuelTube);
 
-    // Heated Piezo Pulse Valve Block
     const piezoValve = new THREE.Mesh(new THREE.BoxGeometry(32, 28, 32), matStainless);
     piezoValve.position.set(0, 115, 0);
     groupFuel.add(piezoValve);
@@ -1569,7 +1529,6 @@
     // =========================================================================
     // 14. BOTTOM VACUUM ROUGHING, GATE VALVE & COLD TRAP (Port -Y)
     // =========================================================================
-    // CF 150 Pneumatic Gate Valve
     const gateValve = new THREE.Mesh(new THREE.BoxGeometry(170, 24, 170), matStainless);
     gateValve.position.set(0, -172, 0);
     groupRoughing.add(gateValve);
@@ -1579,12 +1538,10 @@
     airActuator.position.set(115, -172, 0);
     groupRoughing.add(airActuator);
 
-    // Liquid Nitrogen Chevron Cold Trap (Freezes Boron Dust)
     const cryoColdTrap = new THREE.Mesh(new THREE.CylinderGeometry(42, 42, 60, 32), matStainless);
     cryoColdTrap.position.set(0, -220, 0);
     groupRoughing.add(cryoColdTrap);
 
-    // Helical Frosted LN2 Coil around Cold Trap
     const helixCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(45, -200, 0),
       new THREE.Vector3(0, -210, 45),
@@ -1595,12 +1552,10 @@
     const helixCoil = new THREE.Mesh(new THREE.TubeGeometry(helixCurve, 32, 3, 12, false), matFrostedLN2);
     groupRoughing.add(helixCoil);
 
-    // Turbomolecular High-Vacuum Pump (80,000 RPM)
     const turboPump = new THREE.Mesh(new THREE.CylinderGeometry(56, 56, 110, 32), new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.85, roughness: 0.25 }));
     turboPump.position.set(0, -305, 0);
     groupRoughing.add(turboPump);
 
-    // Flexible Corrugated Stainless Steel Foreline Bellows Hose
     const hoseCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0, -315, 0),
       new THREE.Vector3(-45, -310, 40),
@@ -1610,38 +1565,36 @@
     const forelineHose = new THREE.Mesh(new THREE.TubeGeometry(hoseCurve, 32, 11, 16, false), matStainless);
     groupRoughing.add(forelineHose);
 
-    // Dry Scroll Backing Roughing Pump
     const scrollPump = new THREE.Mesh(new THREE.CylinderGeometry(42, 42, 95, 24), new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 }));
     scrollPump.rotation.x = Math.PI / 2;
     scrollPump.position.set(-95, -235, 130);
     groupRoughing.add(scrollPump);
 
     // =========================================================================
-    // 15. PASSIVE SPLIT-CLAMSHELL RADIATION SHIELD (Lead + Borated HDPE)
+    // 15. PASSIVE SPLIT-CLAMSHELL RADIATION SHIELD
     // =========================================================================
     const shieldOuterRadius = 145;
     const shieldInnerRadius = 105;
     const shieldHeight = 480;
 
     const shieldGeomL = new THREE.CylinderGeometry(shieldOuterRadius, shieldOuterRadius, shieldHeight, 48, 1, false, Math.PI / 2, Math.PI);
-    shieldGeomL.rotateX(Math.PI / 2);
+    shieldGeomL.rotateZ(Math.PI / 2);
     const shieldL = new THREE.Mesh(shieldGeomL, matHDPE);
-    shieldL.position.set(-5, 0, 0);
+    shieldL.position.set(0, 0, -5);
     groupShield.add(shieldL);
 
     const shieldGeomR = new THREE.CylinderGeometry(shieldOuterRadius, shieldOuterRadius, shieldHeight, 48, 1, false, -Math.PI / 2, Math.PI);
-    shieldGeomR.rotateX(Math.PI / 2);
+    shieldGeomR.rotateZ(Math.PI / 2);
     const shieldR = new THREE.Mesh(shieldGeomR, matHDPE);
-    shieldR.position.set(5, 0, 0);
+    shieldR.position.set(0, 0, 5);
     groupShield.add(shieldR);
 
-    // 6mm Lead Sheet Liners
     const leadGeomL = new THREE.CylinderGeometry(shieldInnerRadius + 6, shieldInnerRadius + 6, shieldHeight - 20, 48, 1, false, Math.PI / 2, Math.PI);
-    leadGeomL.rotateX(Math.PI / 2);
+    leadGeomL.rotateZ(Math.PI / 2);
     shieldL.add(new THREE.Mesh(leadGeomL, matLead));
 
     const leadGeomR = new THREE.CylinderGeometry(shieldInnerRadius + 6, shieldInnerRadius + 6, shieldHeight - 20, 48, 1, false, -Math.PI / 2, Math.PI);
-    leadGeomR.rotateX(Math.PI / 2);
+    leadGeomR.rotateZ(Math.PI / 2);
     shieldR.add(new THREE.Mesh(leadGeomR, matLead));
 
     registerInteractive(shieldL, {
@@ -1654,13 +1607,12 @@
     });
 
     // =========================================================================
-    // 16. DYNAMIC PLASMA SIMULATION FX (Sheath -> Pinch -> Plasmoid Beam)
-    // EXACT MATCH TO "deca_reactor_stator_closeup.jpg"!
-    // "the plasma sphere comes out from this side" -> Exits into Stator (+X)
+    // 16. DYNAMIC PLASMA SIMULATION (Sheath -> Pinch -> Plasmoid Beam through +X)
+    // EXACT MATCH TO USER'S DIRECT REQUEST: "the plasma sphere comes out from this side"
     // =========================================================================
-    // Stage 1: Coaxial Plasma Sheath (Conical current sheet sweeping from breech to tip)
+    // 1) Coaxial Plasma Sheath sweeping along electrodes from X = -60 to X = +88
     const sheathGeom = new THREE.ConeGeometry(46, 35, 48, 1, true);
-    sheathGeom.rotateX(-Math.PI / 2);
+    sheathGeom.rotateZ(-Math.PI / 2);
     const sheathMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,
@@ -1671,34 +1623,30 @@
     const plasmaSheath = new THREE.Mesh(sheathGeom, sheathMat);
     scene.add(plasmaSheath);
 
-    // Stage 2: Blinding Solar-Core Pinch (at nozzle tip)
+    // 2) Solar-Core Pinch at Nozzle Tip (X = +88mm)
     const pinchMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
     const plasmaPinch = new THREE.Mesh(new THREE.SphereGeometry(12, 32, 32), pinchMat);
-    plasmaPinch.position.set(0, 0, 92);
+    plasmaPinch.position.set(88, 0, 0);
     scene.add(plasmaPinch);
 
-    // Pinch corona flare
     const coronaMat = new THREE.MeshBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0, side: THREE.BackSide });
     const plasmaCorona = new THREE.Mesh(new THREE.SphereGeometry(22, 32, 32), coronaMat);
-    plasmaCorona.position.set(0, 0, 92);
+    plasmaCorona.position.set(88, 0, 0);
     scene.add(plasmaCorona);
 
-    // Stage 3: The Ejected Plasmoid Vortex Sphere (Compact Toroid shooting down +X!)
+    // 3) Ejected Plasmoid Vortex Sphere (Compact Toroid Shooting out through +X into Stator!)
     const plasmoidGroup = new THREE.Group();
     scene.add(plasmoidGroup);
 
-    // Glowing core sphere
     const plasmoidCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
     const plasmoidCore = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), plasmoidCoreMat);
     plasmoidGroup.add(plasmoidCore);
 
-    // Outer luminous violet toroid
     const plasmoidToroidMat = new THREE.MeshBasicMaterial({ color: 0xd946ef, transparent: true, opacity: 0 });
     const plasmoidToroid = new THREE.Mesh(new THREE.TorusGeometry(15, 6, 24, 32), plasmoidToroidMat);
     plasmoidToroid.rotation.y = Math.PI / 2;
     plasmoidGroup.add(plasmoidToroid);
 
-    // Supersonic Mach Shock Wave Plume behind Plasmoid
     const shockPlumeGeom = new THREE.ConeGeometry(18, 110, 32, 1, true);
     shockPlumeGeom.rotateZ(Math.PI / 2);
     const shockPlumeMat = new THREE.MeshBasicMaterial({
@@ -1710,10 +1658,9 @@
     const shockPlume = new THREE.Mesh(shockPlumeGeom, shockPlumeMat);
     plasmoidGroup.add(shockPlume);
 
-    // Pulse Execution State
     let isFiring = false;
     let pulseTime = 0;
-    let pulseSpeedMultiplier = 0.45; // Default slow-mo for pristine physics inspection
+    let pulseSpeedMultiplier = 0.45;
 
     function triggerPulse() {
       if (isFiring) return;
@@ -1738,7 +1685,6 @@
     document.getElementById('toggle-fuel').addEventListener('change', e => groupFuel.visible = e.target.checked);
     document.getElementById('toggle-shield').addEventListener('change', e => groupShield.visible = e.target.checked);
 
-    // Chamber Cutaway Slider (0: Solid, 1: 90° Cutaway, 2: Transparent X-Ray)
     const cutawaySlider = document.getElementById('cutaway-slider');
     const cutawayVal = document.getElementById('cutaway-val');
     cutawaySlider.addEventListener('input', e => {
@@ -1765,7 +1711,6 @@
       solidCrossZ.material.transparent = false; solidCrossZ.material.opacity = 1.0;
     });
 
-    // Speed Slider
     const speedSlider = document.getElementById('speed-slider');
     const speedVal = document.getElementById('speed-val');
     speedSlider.addEventListener('input', e => {
@@ -1774,7 +1719,6 @@
       speedVal.innerText = spd === 1 ? "10% Slow-Mo" : (spd === 10 ? "50 Hz Real-Time" : `${spd * 10}% Speed`);
     });
 
-    // Studio Brightness Slider
     const brightSlider = document.getElementById('bright-slider');
     const brightVal = document.getElementById('bright-val');
     brightSlider.addEventListener('input', e => {
@@ -1784,11 +1728,10 @@
       hemiLight.intensity = 2.0 * b;
       keyLight.intensity = 3.2 * b;
       fillLight.intensity = 1.8 * b;
-      frontViewLight.intensity = 1.5 * b;
+      frontViewLight.intensity = 1.6 * b;
       renderer.toneMappingExposure = 1.30 * Math.sqrt(b);
     });
 
-    // Camera Navigation Tweens
     let isTweeningCam = false;
     const camTargetPos = new THREE.Vector3();
     const controlsTargetPos = new THREE.Vector3();
@@ -1799,28 +1742,29 @@
       isTweeningCam = true;
     }
 
-    // Camera Presets matching Benchmark Photos
+    // Camera Presets
     document.getElementById('cam-front').addEventListener('click', () => {
       stopTour();
-      // Directly facing the front CF 150 viewport, looking down the bore of the 16 rods and anode!
-      setCamTarget(new THREE.Vector3(0, 5, 290), new THREE.Vector3(0, 0, 5));
+      // Directly facing the front CF 150 viewport at +Z
+      setCamTarget(new THREE.Vector3(0, 15, 340), new THREE.Vector3(0, 0, 0));
     });
 
     document.getElementById('cam-stator').addEventListener('click', () => {
       stopTour();
-      // Tight macro angle on the 6-stage Faraday stator coils with frosted LN2 lines!
-      setCamTarget(new THREE.Vector3(340, 110, 190), new THREE.Vector3(310, 0, 0));
+      // Tight macro angle on the 6-stage Faraday stator coils where the plasma shoots through!
+      setCamTarget(new THREE.Vector3(340, 90, 180), new THREE.Vector3(300, 0, 0));
     });
 
     document.getElementById('cam-side').addEventListener('click', () => {
       stopTour();
       // Side CAD profile view
-      setCamTarget(new THREE.Vector3(120, 90, 480), new THREE.Vector3(100, 0, 0));
+      setCamTarget(new THREE.Vector3(80, 120, 500), new THREE.Vector3(80, 0, 0));
     });
 
-    document.getElementById('cam-reset').addEventListener('click', () => {
+    document.getElementById('cam-bore').addEventListener('click', () => {
       stopTour();
-      setCamTarget(new THREE.Vector3(480, 240, 520), new THREE.Vector3(60, -10, 0));
+      // Looking directly down the electrode bore (Replicating deca_reactor_lab_photoreal.jpg)
+      setCamTarget(new THREE.Vector3(-320, 0, 0), new THREE.Vector3(0, 0, 0));
     });
 
     // Benchmark Photo Modal
@@ -1846,9 +1790,7 @@
       }
     });
 
-    // =========================================================================
-    // 18. RAYCASTER COMPONENT INSPECTOR
-    // =========================================================================
+    // Raycaster
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const tooltip = document.getElementById('tooltip');
@@ -1902,46 +1844,40 @@
     });
 
     // =========================================================================
-    // 19. CINEMATIC GUIDED TOUR ENGINE (7 Stages)
+    // 18. CINEMATIC GUIDED TOUR ENGINE (7 Stages)
     // =========================================================================
     const tourStages = [
       {
-        title: "🎬 1. Front Viewport & Concentric Electrodes",
+        title: "🎬 1. Front Viewport & Chamber Profile",
         count: "STAGE 1 / 7",
-        desc: "Looking directly down the barrel through the CF 150 quartz window: The 16 OFHC copper cathode rods surround the central hollow W-25Re anode, backed by the white h-BN knife-edge insulator.",
-        camPos: new THREE.Vector3(0, 5, 280),
-        target: new THREE.Vector3(0, 0, 5),
-        action: () => {
-          groupShield.visible = false;
-        }
+        desc: "Looking directly through the CF 150 fused quartz viewport: The 316LN stainless cross chamber houses the concentric coaxial electrodes, fuel delivery manifold, and right-hand Faraday stator output.",
+        camPos: new THREE.Vector3(0, 15, 340),
+        target: new THREE.Vector3(0, 0, 0),
+        action: () => { groupShield.visible = false; }
       },
       {
         title: "🧪 2. Fuel Sublimation Boiler (Port +Y)",
         count: "STAGE 2 / 7",
         desc: "On the top port: Solid Decaborane (B₁₀H₁₄) pellets in the 316L cell are warmed to 120°C inside the golden polyimide heating jacket. Hydrogen carrier sweeps vapor through a 5µm frit into the high-speed piezo valve.",
-        camPos: new THREE.Vector3(30, 310, 160),
+        camPos: new THREE.Vector3(40, 310, 160),
         target: new THREE.Vector3(0, 200, 0),
         action: () => {}
       },
       {
         title: "💥 3. 387 km/s Rundown & 326 T Self-Pinch",
         count: "STAGE 3 / 7",
-        desc: "Discharge fires: A 3.82 MA pulse drives an inverted coaxial plasma sheath down the electrodes. At the nozzle tip, Lorentz J×B forces pinch the plasma into a 326 Tesla solar-core focus, triggering p-¹¹B fusion!",
-        camPos: new THREE.Vector3(70, 45, 190),
-        target: new THREE.Vector3(0, 0, 80),
-        action: () => {
-          triggerPulse();
-        }
+        desc: "Discharge fires: A 3.82 MA pulse drives an inverted coaxial plasma sheath from left to right. At the nozzle tip (X = 88mm), Lorentz J×B forces pinch the plasma into a 326 Tesla solar-core focus, triggering p-¹¹B fusion!",
+        camPos: new THREE.Vector3(90, 60, 210),
+        target: new THREE.Vector3(88, 0, 0),
+        action: () => { triggerPulse(); }
       },
       {
         title: "🌀 4. 6-Stage Faraday Stator (Plasmoid Beam)",
         count: "STAGE 4 / 7",
         desc: "The plasma sphere shoots out through this side! The high-speed plasmoid enters the translucent Silicon Nitride tube, flying through 6 LN₂-cooled copper coils (S1-S6) to extract 69.5% of kinetic energy directly into electricity.",
-        camPos: new THREE.Vector3(340, 110, 190),
-        target: new THREE.Vector3(310, 0, 0),
-        action: () => {
-          triggerPulse();
-        }
+        camPos: new THREE.Vector3(340, 90, 180),
+        target: new THREE.Vector3(300, 0, 0),
+        action: () => { triggerPulse(); }
       },
       {
         title: "⚡ 5. 100 kJ Pulse Capacitors & Busbars",
@@ -1955,7 +1891,7 @@
         title: "🛡️ 6. Passive Radiation Shield Clamshell",
         count: "STAGE 6 / 7",
         desc: "The split-clamshell rolls shut on casters: 6 mm Lead sheet stops 99.9% of Bremsstrahlung X-rays (100 TVL), while 100 mm Borated HDPE thermalizes and captures stray fast neutrons.",
-        camPos: new THREE.Vector3(320, 140, 280),
+        camPos: new THREE.Vector3(280, 140, 280),
         target: new THREE.Vector3(60, 0, 0),
         action: () => {
           groupShield.visible = true;
@@ -1966,8 +1902,8 @@
         title: "⚡ 7. 7.62 MW Continuous Grid Baseload (Q_eng = 2.25)",
         count: "STAGE 7 / 7",
         desc: "At 50 Hz repetition, the direct Faraday stator recovery generates 7.62 MW net continuous electricity fed directly into the municipal grid (+125% net surplus wall-plug gain), completely bypassing steam turbines!",
-        camPos: new THREE.Vector3(440, 220, 480),
-        target: new THREE.Vector3(60, -10, 0),
+        camPos: new THREE.Vector3(360, 200, 460),
+        target: new THREE.Vector3(80, 0, 0),
         action: () => {
           groupShield.visible = false;
           document.getElementById('toggle-shield').checked = false;
@@ -2062,7 +1998,7 @@
     });
 
     // =========================================================================
-    // 20. ANIMATION RENDER LOOP
+    // 19. ANIMATION RENDER LOOP
     // =========================================================================
     const clock = new THREE.Clock();
 
@@ -2080,28 +2016,27 @@
 
       controls.update();
 
-      // Slow passive lab rotation when idle
       if (!isTweeningCam && !tourActive && !isFiring) {
         reactorRoot.rotation.y += 0.0004;
       }
 
       // =======================================================================
-      // Dynamic Plasma Pulse FX (Sheath -> Pinch -> Plasmoid Beam through Stator)
+      // Dynamic Plasma Pulse FX (Sheath -> Pinch -> Plasmoid Beam through +X)
       // =======================================================================
       if (isFiring) {
         pulseTime += delta * pulseSpeedMultiplier * 2.8;
 
         if (pulseTime < 0.28) {
-          // Phase 1: Plasma Sheath rundown along electrodes
+          // Phase 1: Plasma Sheath rundown along electrodes from -60 to +88 along X
           const prog = pulseTime / 0.28;
-          const zSheath = -50 + prog * 140;
-          plasmaSheath.position.set(0, 0, zSheath);
+          const xSheath = -60 + prog * 148;
+          plasmaSheath.position.set(xSheath, 0, 0);
           sheathMat.opacity = Math.sin(prog * Math.PI) * 0.95;
           plasmaCoreLight.intensity = prog * 5.0;
           plasmaCoreLight.color.setHex(0x38bdf8);
-          plasmaCoreLight.position.set(0, 0, zSheath);
+          plasmaCoreLight.position.set(xSheath, 0, 0);
         } else if (pulseTime < 0.44) {
-          // Phase 2: Blinding Solar-Core Self-Pinch at nozzle tip (Z = 92mm)
+          // Phase 2: Blinding Solar-Core Self-Pinch at nozzle tip (X = 88mm)
           sheathMat.opacity = 0;
           const pinchProg = (pulseTime - 0.28) / 0.16;
           const scale = 1.0 + Math.sin(pinchProg * Math.PI) * 2.6;
@@ -2111,20 +2046,19 @@
           coronaMat.opacity = Math.sin(pinchProg * Math.PI) * 0.75;
           plasmaCoreLight.intensity = 12.0;
           plasmaCoreLight.color.setHex(0xffffff);
-          plasmaCoreLight.position.set(0, 0, 92);
+          plasmaCoreLight.position.set(88, 0, 0);
         } else if (pulseTime < 0.96) {
           // Phase 3: The Plasmoid Vortex Sphere shoots OUT through this side (+X into Stator)!
           pinchMat.opacity = 0;
           coronaMat.opacity = 0;
           const jetProg = (pulseTime - 0.44) / 0.52;
-          const xBeam = 90 + jetProg * 400; // Shoots along +X through the Stator coils!
+          const xBeam = 88 + jetProg * 390; // Shoots along +X through Stator coils!
           plasmoidGroup.position.set(xBeam, 0, 0);
 
           plasmoidCoreMat.opacity = Math.sin(jetProg * Math.PI) * 0.98;
           plasmoidToroidMat.opacity = Math.sin(jetProg * Math.PI) * 0.92;
           shockPlumeMat.opacity = Math.sin(jetProg * Math.PI) * 0.75;
 
-          // Plasmoid rotates violently as it travels
           plasmoidToroid.rotation.x += delta * 20;
 
           plasmoidBeamLight.intensity = Math.sin(jetProg * Math.PI) * 8.0;
@@ -2133,16 +2067,15 @@
 
           // Stator coils dynamically light up with electromagnetic induction back-EMF glow!
           statorCoils.forEach((c) => {
-            const dist = Math.abs(c.parent.children[0].position.x - xBeam);
+            const dist = Math.abs(c.position.x - xBeam);
             if (dist < 40) {
-              c.material.emissive = new THREE.Color(0x38bdf8);
-              c.material.emissiveIntensity = (1.0 - dist / 40) * 1.4;
+              c.material.emissive.setHex(0x38bdf8);
+              c.material.emissiveIntensity = (1.0 - dist / 40) * 1.8;
             } else {
               c.material.emissiveIntensity = 0;
             }
           });
         } else {
-          // Pulse Complete
           isFiring = false;
           sheathMat.opacity = 0;
           pinchMat.opacity = 0;
