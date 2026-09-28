@@ -66,7 +66,7 @@ The reactor vessel is engineered from low-magnetic permeability **AISI 316LN Sta
 | **Port 1** | Axial Rear (`-Z`) | **CF 200** | High-Current Stripline Header | Clamps anode and cathode baseplates to capacitor stripline with sub-nanohour inductance. |
 | **Port 2** | Axial Forward (`+Z`) | **CF 100** | Faraday Stator Duct Coupling | Transitions from metal chamber to the 25 mm non-conductive ceramic induction duct. |
 | **Port 3** | Vertical Top (`+Y`) | **CF 40** | Piezo Gas-Puff Injector | Houses the 40-micron piezo stack and heated Decaborane (B10H14) vapor nozzle. |
-| **Port 4** | Vertical Bottom (`-Y`) | **CF 150** | Turbomolecular Pump Station | Connected to a 300 L/s turbopump with pneumatic gate valve; pulls down to `10^-6 Torr`. |
+| **Port 4** | Vertical Bottom (`-Y`) | **CF 150** | Turbomolecular Pump Station | Connected via LN2/dry-ice cold trap chevron baffle to a 300 L/s turbopump; pulls down to `10^-6 Torr` while shielding pump blades from abrasive boron dust. |
 | **Port 5** | Lateral Left (`-X`) | **CF 63** | Optical Interferometer Port | Optical-grade Fused Silica viewport for 532 nm laser Schlieren / shadowgraphy of sheath. |
 | **Port 6** | Lateral Right (`+X`) | **CF 40** | Rogowski Diagnostic Feedthrough | High-bandwidth differential Rogowski coil and capacitive voltage divider (`dV/dt`). |
 
@@ -213,6 +213,11 @@ At 3.8 MA, magnetic repulsion forces (`Lorentz bursting pressure`) between the s
 │   ├── [DECA-DCT-SI3N4-001] 25 mm Silicon Nitride Vacuum Duct Tube
 │   ├── [DECA-COIL-OFHC-006] 4-Turn Coaxial Stator Coils (Qty 6, LN2 cooled)
 │   └── [MAG-N52-RING-012] 2.0 Tesla Permanent Bias Magnets (Qty 12)
+├── [DECA-PROT-SUBASM-001] Hard-Stop Prevention & Reliability Subassembly
+│   ├── [DECA-VAC-CRYO-001] Liquid Nitrogen/Dry-Ice Cold Trap Chevron Baffle (Port 4)
+│   ├── [DECA-BEL-316L-001] CF 100 Edge-Welded Stainless Steel Anode Expansion Bellows
+│   ├── [DECA-SW-PSEUDO-004] Quad-Parallel Sealed Pseudospark Plasma Switch Array (50 Hz)
+│   └── [DECA-CTL-FIBER-001] Multi-Channel Optical Fiber Trigger & Telemetry Transceivers
 └── [DECA-PWR-BUS-001] Ultra-Low Inductance Parallel Stripline
     ├── [BUS-CU-HV-001] 50 kV Bottom High-Voltage Copper Plate (600 mm)
     ├── [BUS-CU-GND-001] Ground Return Top Copper Plate (600 mm)
@@ -227,3 +232,25 @@ At 3.8 MA, magnetic repulsion forces (`Lorentz bursting pressure`) between the s
 2. **h-BN Sleeve Cleanliness:** Boron Nitride parts are handled strictly with powder-free nitrile gloves and stored in a nitrogen desiccator box; h-BN is never exposed to liquid water to prevent micro-delamination.
 3. **Helium Leak Rate Check:** The assembled vacuum envelope must demonstrate a global helium leak rate of less than `1.0 x 10^-9 mbar-L/second` before high-voltage electrical connection.
 4. **Stripline Hi-Pot Test:** The parallel stripline busbar is tested with a 75 kV DC hipot tester for 60 seconds with zero dielectric leakage (< 10 µA) prior to coupling with the capacitor bank.
+
+---
+
+### 9. Hard-Stop Prevention Subsystems (Eliminating Lab Showstoppers)
+
+To prevent catastrophic experimental shutdowns during continuous 50 Hz operation, four specialized mechanical protections are integrated directly into the hardware stack:
+
+#### 9.1 Fiber-Optic Trigger & Telemetry Isolation (`DECA-CTL-FIBER-001`)
+* **Hazard:** 3.8 MA discharge with `dI/dt > 10^12 A/s` generates severe EMP, inducing hundreds of volts in metallic signal cables and frying digital logic.
+* **Architecture:** Control signals between the diagnostic control PC and the reactor high-voltage deck travel exclusively over **Avago HFBR-1521 / standard plastic optical fiber (POF)** lines. Zero copper data cables cross the high-voltage perimeter, providing > 100 kV galvanic isolation.
+
+#### 9.2 Cryogenic Cold-Trap Chevron Baffle (`DECA-VAC-CRYO-001`)
+* **Hazard:** Sputtered tungsten particles and unburned Decaborane dust entering the turbomolecular pump at 80,000 RPM will shred titanium rotor blades.
+* **Architecture:** Mounted directly between Chamber Port 4 and the turbopump gate valve. An optically-dense stainless steel chevron baffle cooled by liquid nitrogen or dry ice freezes out unreacted boranes and intercepts metallic particulates via impaction, protecting pump bearings and blades.
+
+#### 9.3 Sealed Pseudospark Plasma Switch Array (`DECA-SW-PSEUDO-004`)
+* **Hazard:** Traditional spark gaps erode and pit within minutes under 50 Hz continuous pulsing (180,000 shots/hour).
+* **Architecture:** Utilizes a quad-parallel bank of sealed cold hollow-cathode **Pseudospark switches** (gas-filled ceramic envelopes). Current conduction occurs via a broad diffuse plasma discharge rather than a localized spark arc, achieving an operating lifetime exceeding **100 million pulses**.
+
+#### 9.4 Anode Axial Expansion Bellows (`DECA-BEL-316L-001`)
+* **Hazard:** Repetitive 50 Hz thermal pulsing causes the central W-25Re anode to expand axially by up to 1.5 mm. Rigid mechanical mounting would exert destructive shear force on the brittle h-BN insulator sleeve.
+* **Architecture:** An edge-welded 316LN stainless steel flexible bellows is integrated into the rear CF 100 mounting flange. The bellows accommodates up to 2.5 mm of axial thermal displacement while maintaining UHV vacuum seal integrity (`< 10^-9 mbar-L/s`).

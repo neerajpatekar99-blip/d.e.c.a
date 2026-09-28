@@ -103,3 +103,19 @@ Instead of complex pumps or screw feeders, the DECA-FDS-01 uses a **passive ther
 * **Zero mechanical moving parts in the hot zone:** No pistons, no gears, no screw augers.
 * **Self-regulating stoichiometry:** Operating at 120°C keeps vapor pressure stable without risking polymer decomposition (which only occurs at >170°C).
 * **Standard off-the-shelf parts:** Entirely constructed from standard Swagelok fittings, a mini CF-40 sampling cylinder, and commercial silicone heating tape.
+
+---
+
+### 6. The Three Foolproof Workshop Safeguards (Lab Traps Neutralized)
+
+1. **The "Shiny Grey Only" Material Rule (No Copper / Brass):**
+   - *Trap:* Hot Decaborane (B₁₀H₁₄) vapor reacts aggressively with Copper (Cu), Brass, or Silver, catalytically forming shock-sensitive, explosive metal-borane complexes and sticky polymer clogs.
+   - *Fix:* Enforce the strict workshop rule: **Zero copper or yellow brass anywhere in the fuel path.** Standardize 100% on **Swagelok 316L Stainless Steel**, PTFE (Teflon) ferrules, and Kalrez seals.
+
+2. **The Valve Dual-Wrap & PTFE Thermal Break (No Flash-Freezing):**
+   - *Trap:* The massive room-temperature vacuum chamber acts as a heat sink, cooling the piezo valve body down to ~50°C. Saturated B₁₀H₁₄ vapor instantly flash-freezes into solid crystals on the cold valve seat, gluing the poppet shut.
+   - *Fix:* Extend the flexible silicone heating tape from the tube by 2 extra wraps directly around the piezo valve body (maintaining it at 135°C), and insert a **2 mm thick PTFE/Macor thermal standoff washer** between the valve and the chamber flange.
+
+3. **Inline 4A Molecular Sieve Trap (No Boric Glass Crusts):**
+   - *Trap:* Trace moisture (humidity) in commercial Hydrogen reacts at 120°C to form Boric Acid (H₃BO₃) and Boron Trioxide (B₂O₃), coating the Mach 2.4 nozzle with a sticky, glassy crust.
+   - *Fix:* Install an inexpensive inline 6-inch stainless cylinder packed with **4A Molecular Sieve beads** on the H₂ supply line to scrub water vapor down to < 1 ppm before it enters the sublimation cell.

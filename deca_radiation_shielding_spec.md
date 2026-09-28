@@ -114,3 +114,15 @@ Instead of pouring cubic meters of heavy concrete or using exotic liquid lithium
 1. **Standard Off-The-Shelf Materials:** Uses standard commercial 6 mm lead sheets and standard prefabricated 100 mm 5% Borated HDPE plates used in hospital radiotherapy rooms.
 2. **Zero Maintenance:** Passive solid-state shielding. No pumps, no cooling fluid loops, no water jackets to freeze or leak.
 3. **Ergonomic Maintenance:** Two people can unlock four over-center draw latches and roll the entire shield back in 15 seconds to access the vacuum chamber or replace electrode components.
+
+---
+
+### 6. The Two Simple Workshop Safeguards (Lab Traps Neutralized)
+
+1. **The "Bread Sandwich" Through-Bolts (No Lead Creep / Slit Leaks):**
+   - *Trap:* Pure sheet lead is soft and ductile. Over 3 to 6 months of hanging vertically, gravity causes the lead to slowly sag downward (mechanical creep), leaving a 5 mm slit at the top where high-energy Bremsstrahlung X-rays leak out.
+   - *Fix:* Sandwich the 6 mm lead sheet flat between the structural outer steel door frame and the 100 mm HDPE block. Clamp the assembly with 6 stainless steel through-bolts and wide washers. Clamped flat between two rigid plates, the lead physically cannot sag or creep.
+
+2. **Motorcycle Fiberglass Exhaust Wrap (No HDPE Melting):**
+   - *Trap:* Borated High-Density Polyethylene (HDPE) softens and melts at 125°C to 135°C. Trace-heated fuel tubes operate at 135°C, and vacuum bakeout bands reach 150°C. Direct contact melts the plastic.
+   - *Fix:* Wrap all hot fuel pipes in **5 mm of commercial fiberglass exhaust wrap** (header tape). The outer surface of the fiberglass wrap stays below 40°C, ensuring that even accidental contact will never soften or melt the HDPE shield blocks.
