@@ -40,6 +40,101 @@
       padding: 16px 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.12);
       pointer-events: auto;
+      transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+    }
+    .hud-panel.panel-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+      transform: scale(0.95) !important;
+    }
+
+    /* Floating Quick Bar for UI Zen Mode */
+    .ui-toggle-bar {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    }
+    .btn-zen {
+      background: rgba(11, 18, 33, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #38bdf8;
+      padding: 7px 18px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.2);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-zen:hover {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.55);
+      transform: translateY(-1px);
+    }
+    .btn-zen.zen-active {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: #f59e0b;
+      color: #fbbf24;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+    }
+
+    /* Close button on panels */
+    .panel-close-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .panel-close-btn:hover {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Clean View Button inside controls */
+    .btn-clean-ui {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px dashed rgba(56, 189, 248, 0.6);
+      color: #7dd3fc;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-clean-ui:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
     }
     #header-panel {
       top: 18px;
@@ -456,9 +551,19 @@
   <div id="canvas-container"></div>
   <div id="tooltip"></div>
 
+  <!-- Top-Center Floating Quick Bar for UI Overlays / Zen Mode -->
+  <div id="ui-bar" class="ui-toggle-bar">
+    <button id="btn-toggle-all-ui" class="btn-zen" title="Toggle All HUD Overlays On/Off (Hotkey: H or Esc)">
+      <span id="zen-icon">👁️</span> <span id="zen-text">Hide All UI Overlays (H)</span>
+    </button>
+  </div>
+
   <!-- Top-Left Title & Live Scientific Telemetry -->
   <div class="hud-panel" id="header-panel">
-    <h1>PROJECT D.E.C.A. <span class="badge">Calibrated Studio</span></h1>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2px;">
+      <h1>PROJECT D.E.C.A. <span class="badge">Calibrated Studio</span></h1>
+      <button class="panel-close-btn" data-target="header-panel" title="Hide this telemetry panel">✕</button>
+    </div>
     <p>Direct Electromagnetic Conversion Architecture<br>100 kJ Aneutronic p-¹¹B Dense Plasma Focus Reactor</p>
     <div class="telemetry-grid">
       <div class="tele-item">
@@ -502,11 +607,19 @@
 
   <!-- Top-Right Controls & Hardware Layers -->
   <div class="hud-panel" id="controls-panel">
-    <h3>Hardware Controls <span class="badge" style="font-size:0.62rem;">PBR CAD</span></h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="margin-bottom:0;">Hardware Controls <span class="badge" style="font-size:0.62rem;">PBR CAD</span></h3>
+      <button class="panel-close-btn" data-target="controls-panel" title="Hide hardware controls panel">✕</button>
+    </div>
     
-    <!-- One-Click Clean View / Remove All Lab Details -->
-    <button class="btn-isolate" id="btn-isolate">
-      ✨ ISOLATE CORE (Remove All Lab Details)
+    <!-- One-Click Clean View / Remove All UI Overlays -->
+    <button class="btn-clean-ui" id="btn-clean-ui-ctrl" title="Hide all UI overlays for a clean unobstructed 3D view">
+      👁️ HIDE ALL UI PANELS (Clean View • H)
+    </button>
+
+    <!-- 3D Stand and Auxiliary Gear Isolation -->
+    <button class="btn-isolate" id="btn-isolate" title="Toggle 3D testbed stand, capacitors, and pumps">
+      🎯 3D Scene: Hide Testbed Stand & Auxiliary Gear
     </button>
 
     <label class="layer-toggle">
@@ -596,7 +709,10 @@
 
   <!-- Bottom-Left Component Inspector -->
   <div class="hud-panel" id="inspector-panel">
-    <h2 id="ins-title">Component Inspector <span class="badge" id="ins-status">ACTIVE</span></h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h2 id="ins-title" style="margin-bottom:0;">Component Inspector <span class="badge" id="ins-status">ACTIVE</span></h2>
+      <button class="panel-close-btn" data-target="inspector-panel" title="Hide inspector panel">✕</button>
+    </div>
     <p id="ins-desc">Click any component to inspect industrial tolerances, material metallurgy, and physics operation.</p>
     <table class="spec-table" id="ins-specs">
       <tr><td>Subsystem:</td><td id="spec-sub">Complete Laboratory Testbed</td></tr>
@@ -647,6 +763,7 @@
   <div class="hud-panel" id="status-bar">
     <div class="status-dot"></div>
     <span>Calibrated PBR Lighting • Zero Over-Exposure • Plasmoid Beam (+X)</span>
+    <button class="panel-close-btn" data-target="status-bar" style="margin-left:6px;" title="Hide status bar">✕</button>
   </div>
 
   <script>
@@ -1634,12 +1751,12 @@
     scene.add(plasmaSheath);
 
     const pinchMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-    const plasmaPinch = new THREE.Mesh(new THREE.SphereGeometry(12, 32, 32), pinchMat);
+    const plasmaPinch = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), pinchMat);
     plasmaPinch.position.set(88, 0, 0);
     scene.add(plasmaPinch);
 
     const coronaMat = new THREE.MeshBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0, side: THREE.BackSide });
-    const plasmaCorona = new THREE.Mesh(new THREE.SphereGeometry(22, 32, 32), coronaMat);
+    const plasmaCorona = new THREE.Mesh(new THREE.SphereGeometry(18, 32, 32), coronaMat);
     plasmaCorona.position.set(88, 0, 0);
     scene.add(plasmaCorona);
 
@@ -1647,15 +1764,15 @@
     scene.add(plasmoidGroup);
 
     const plasmoidCoreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-    const plasmoidCore = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 32), plasmoidCoreMat);
+    const plasmoidCore = new THREE.Mesh(new THREE.SphereGeometry(7.5, 32, 32), plasmoidCoreMat);
     plasmoidGroup.add(plasmoidCore);
 
     const plasmoidToroidMat = new THREE.MeshBasicMaterial({ color: 0xd946ef, transparent: true, opacity: 0 });
-    const plasmoidToroid = new THREE.Mesh(new THREE.TorusGeometry(15, 6, 24, 32), plasmoidToroidMat);
+    const plasmoidToroid = new THREE.Mesh(new THREE.TorusGeometry(12, 4, 24, 32), plasmoidToroidMat);
     plasmoidToroid.rotation.y = Math.PI / 2;
     plasmoidGroup.add(plasmoidToroid);
 
-    const shockPlumeGeom = new THREE.ConeGeometry(18, 110, 32, 1, true);
+    const shockPlumeGeom = new THREE.ConeGeometry(12, 70, 32, 1, true);
     shockPlumeGeom.rotateZ(Math.PI / 2);
     const shockPlumeMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -1681,8 +1798,87 @@
     document.getElementById('btn-fire').addEventListener('click', triggerPulse);
 
     // =========================================================================
-    // 17. UI LISTENERS, CAMERA PRESETS & ISOLATE CORE MODE
+    // 17. UI HUD VISIBILITY MANAGER (CLEAN SCREEN / ZEN MODE) & ISOLATE CORE
     // =========================================================================
+    const allHudPanels = [
+      document.getElementById('header-panel'),
+      document.getElementById('controls-panel'),
+      document.getElementById('inspector-panel'),
+      document.getElementById('status-bar')
+    ];
+
+    const btnToggleAllUi = document.getElementById('btn-toggle-all-ui');
+    const zenText = document.getElementById('zen-text');
+    const zenIcon = document.getElementById('zen-icon');
+    const btnCleanUiCtrl = document.getElementById('btn-clean-ui-ctrl');
+
+    function updateUiToggleState() {
+      const anyVisible = allHudPanels.some(p => p && !p.classList.contains('panel-hidden'));
+      if (!anyVisible) {
+        // All hidden
+        btnToggleAllUi.classList.add('zen-active');
+        zenIcon.innerText = '👁️';
+        zenText.innerText = 'Show All UI Overlays (H)';
+      } else {
+        // Some or all visible
+        btnToggleAllUi.classList.remove('zen-active');
+        zenIcon.innerText = '✕';
+        zenText.innerText = 'Hide All UI Overlays (H)';
+      }
+    }
+
+    function hideAllUi() {
+      allHudPanels.forEach(p => { if (p) p.classList.add('panel-hidden'); });
+      updateUiToggleState();
+    }
+
+    function showAllUi() {
+      allHudPanels.forEach(p => { if (p) p.classList.remove('panel-hidden'); });
+      updateUiToggleState();
+    }
+
+    function toggleAllUi() {
+      const anyVisible = allHudPanels.some(p => p && !p.classList.contains('panel-hidden'));
+      if (anyVisible) {
+        hideAllUi();
+      } else {
+        showAllUi();
+      }
+    }
+
+    if (btnToggleAllUi) btnToggleAllUi.addEventListener('click', toggleAllUi);
+    if (btnCleanUiCtrl) btnCleanUiCtrl.addEventListener('click', hideAllUi);
+
+    // Individual close buttons on each panel
+    document.querySelectorAll('.panel-close-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetId = btn.getAttribute('data-target');
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) {
+          targetPanel.classList.add('panel-hidden');
+          updateUiToggleState();
+        }
+      });
+    });
+
+    // Keyboard shortcut: Press 'H' / 'h' or 'Escape' to toggle all UI
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'h' || e.key === 'H') {
+        toggleAllUi();
+      } else if (e.key === 'Escape') {
+        if (photoModal && photoModal.style.display === 'flex') {
+          photoModal.style.display = 'none';
+        } else if (tourActive) {
+          stopTour();
+        } else {
+          toggleAllUi();
+        }
+      }
+    });
+
+    // 3D Auxiliary Stand & Hardware Isolation
     let isCoreIsolated = false;
     const btnIsolate = document.getElementById('btn-isolate');
 
@@ -1690,7 +1886,7 @@
       isCoreIsolated = !isCoreIsolated;
 
       if (isCoreIsolated) {
-        // HIDE ALL LAB DETAILS (Clean floating core reactor!)
+        // HIDE ALL 3D LAB GEAR
         groupFrame.visible = false;
         groupCaps.visible = false;
         groupRoughing.visible = false;
@@ -1703,13 +1899,13 @@
         document.getElementById('toggle-roughing').checked = false;
         document.getElementById('toggle-rearfeed').checked = false;
 
-        btnIsolate.innerText = "🔬 SHOW ALL LAB DETAILS (Stand, Caps, Pumps)";
+        btnIsolate.innerText = "🔬 3D Scene: Show Testbed Stand & Auxiliary Gear";
         btnIsolate.classList.add('isolated');
 
         // Smoothly zoom in to frame the isolated core
         setCamTarget(new THREE.Vector3(120, 20, 380), new THREE.Vector3(80, 0, 0));
       } else {
-        // RESTORE ALL LAB DETAILS
+        // RESTORE ALL 3D LAB GEAR
         groupFrame.visible = true;
         groupCaps.visible = true;
         groupRoughing.visible = true;
@@ -1722,7 +1918,7 @@
         document.getElementById('toggle-roughing').checked = true;
         document.getElementById('toggle-rearfeed').checked = true;
 
-        btnIsolate.innerText = "✨ ISOLATE CORE (Remove All Lab Details)";
+        btnIsolate.innerText = "🎯 3D Scene: Hide Testbed Stand & Auxiliary Gear";
         btnIsolate.classList.remove('isolated');
 
         // Reset camera back to lab overview
@@ -2092,12 +2288,12 @@
           // Phase 2: Blinding Solar-Core Self-Pinch at nozzle tip (X = 88mm)
           sheathMat.opacity = 0;
           const pinchProg = (pulseTime - 0.28) / 0.16;
-          const scale = 1.0 + Math.sin(pinchProg * Math.PI) * 2.6;
+          const scale = 1.0 + Math.sin(pinchProg * Math.PI) * 1.3;
           plasmaPinch.scale.set(scale, scale, scale);
-          plasmaCorona.scale.set(scale * 1.5, scale * 1.5, scale * 1.5);
+          plasmaCorona.scale.set(scale * 1.4, scale * 1.4, scale * 1.4);
           pinchMat.opacity = Math.sin(pinchProg * Math.PI) * 1.0;
           coronaMat.opacity = Math.sin(pinchProg * Math.PI) * 0.75;
-          plasmaCoreLight.intensity = 12.0;
+          plasmaCoreLight.intensity = 10.0;
           plasmaCoreLight.color.setHex(0xffffff);
           plasmaCoreLight.position.set(88, 0, 0);
         } else if (pulseTime < 0.96) {
