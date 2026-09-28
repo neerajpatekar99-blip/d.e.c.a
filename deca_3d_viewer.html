@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project D.E.C.A. - Real-World Industrial Laboratory Testbed (3D CAD)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body {
+      background: radial-gradient(circle at 50% 35%, #1e2638 0%, #060911 100%);
+      color: #f0f6fc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    /* HUD Overlays */
+    .hud-panel {
+      position: absolute;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 14px;
+      padding: 16px 22px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 30px rgba(56, 189, 248, 0.15);
+      pointer-events: auto;
+    }
+    /* Header / Title */
+    #header-panel {
+      top: 20px;
+      left: 20px;
+      max-width: 420px;
+    }
+    #header-panel h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 0.70rem;
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .badge-gain {
+      background: rgba(34, 197, 94, 0.25);
+      color: #4ade80;
+      border-color: rgba(34, 197, 94, 0.6);
+      font-family: "SF Mono", Consolas, monospace;
+    }
+    #header-panel p {
+      font-size: 0.80rem;
+      color: #94a3b8;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    /* Telemetry readout */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.15);
+    }
+    .tele-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .tele-label {
+      font-size: 0.64rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .tele-val {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #4ade80;
+      font-family: "SF Mono", Consolas, monospace;
+      margin-top: 2px;
+    }
+    .tele-highlight {
+      color: #38bdf8;
+    }
+    .tele-gold {
+      color: #facc15;
+    }
+    /* Controls / Layers */
+    #controls-panel {
+      top: 20px;
+      right: 20px;
+      width: 320px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+    }
+    #controls-panel h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: #94a3b8;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .layer-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 0.78rem;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      color: #cbd5e1;
+    }
+    .layer-toggle:hover {
+      color: #38bdf8;
+    }
+    .toggle-checkbox {
+      cursor: pointer;
+      accent-color: #0284c7;
+      width: 15px;
+      height: 15px;
+    }
+    /* Action Buttons */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .btn {
+      background: #1e293b;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #f1f5f9;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.81rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      background: #334155;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+    .btn-tour {
+      background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+      border-color: #fbbf24;
+      color: #0f172a;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+    }
+    .btn-tour:hover {
+      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+      box-shadow: 0 0 24px rgba(251, 191, 36, 0.7);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.65);
+    }
+    /* Sliders */
+    .slider-container {
+      margin-top: 10px;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .slider-input {
+      width: 100%;
+      accent-color: #38bdf8;
+      cursor: pointer;
+    }
+    /* Inspector / Component Info */
+    #inspector-panel {
+      bottom: 24px;
+      left: 20px;
+      width: 390px;
+      transition: all 0.3s ease;
+    }
+    #inspector-panel h2 {
+      font-size: 0.95rem;
+      color: #fbbf24;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #inspector-content {
+      font-size: 0.80rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .spec-table {
+      width: 100%;
+      margin-top: 8px;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+    }
+    .spec-table td {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    }
+    .spec-table td:first-child {
+      color: #94a3b8;
+      width: 42%;
+    }
+    .spec-table td:last-child {
+      color: #f8fafc;
+      font-weight: 600;
+      font-family: "SF Mono", Consolas, monospace;
+    }
+    /* CINEMATIC TOUR SUBTITLE BAR (Bottom Center) */
+    #tour-hud {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 740px;
+      max-width: 92vw;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(18px);
+      border: 2px solid #f59e0b;
+      border-radius: 16px;
+      padding: 18px 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(245, 158, 11, 0.35);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tour-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tour-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tour-step-counter {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-family: "SF Mono", Consolas, monospace;
+      font-weight: 700;
+      background: rgba(148, 163, 184, 0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .tour-body {
+      font-size: 0.92rem;
+      color: #f1f5f9;
+      line-height: 1.55;
+    }
+    .tour-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    .tour-btn {
+      background: #1e293b;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tour-btn:hover {
+      background: #334155;
+      color: #fbbf24;
+      border-color: #fbbf24;
+    }
+    .tour-progress-bar {
+      height: 5px;
+      width: 100%;
+      background: #334155;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .tour-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      transition: width 0.2s ease;
+    }
+    /* Status Bar at Bottom Right */
+    #status-bar {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      padding: 8px 16px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #22c55e;
+    }
+    /* Viewport Tooltip */
+    #tooltip {
+      position: absolute;
+      z-index: 100;
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid #38bdf8;
+      color: #f8fafc;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 6px;
+      pointer-events: none;
+      display: none;
+      transform: translate(-50%, -120%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <div id="canvas-container"></div>
+  <div id="tooltip"></div>
+
+  <!-- Top-Left Title & Telemetry -->
+  <div class="hud-panel" id="header-panel">
+    <h1>PROJECT D.E.C.A. <span class="badge">Real Lab Rig</span></h1>
+    <p>Direct Electromagnetic Conversion Architecture<br>100 kJ Aneutronic p-¹¹B Dense Plasma Focus Reactor</p>
+    <div class="telemetry-grid">
+      <div class="tele-item">
+        <span class="tele-label">Pinch Current</span>
+        <span class="tele-val" id="val-curr">3.82 MA</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Self B-Field</span>
+        <span class="tele-val tele-highlight" id="val-bfield">326.4 T</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Sheath Velocity</span>
+        <span class="tele-val" id="val-vel">387.2 km/s</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Q_plasma (Core)</span>
+        <span class="tele-val tele-gold">Q = 4.20</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Q_eng (Wall-Plug)</span>
+        <span class="tele-val" style="color:#38bdf8;">Q = 2.25</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Direct Recovery</span>
+        <span class="tele-val tele-gold" id="val-eff">69.5%</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Net Baseload</span>
+        <span class="tele-val" id="val-pwr">7.62 MW</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Pulse Repetition</span>
+        <span class="tele-val">50.0 Hz</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">Net Gain Status</span>
+        <span class="badge badge-gain">+125% NET</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top-Right Controls & Layers -->
+  <div class="hud-panel" id="controls-panel">
+    <h3>Reactor Hardware <span class="badge" style="font-size:0.65rem;">REAL LAB RIG</span></h3>
+    
+    <label class="layer-toggle">
+      <span>80/20 Structural Lab Stand</span>
+      <input type="checkbox" id="toggle-frame" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>100 kJ Capacitor Bank & Busbars</span>
+      <input type="checkbox" id="toggle-caps" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Vacuum Roughing & Gate Valve</span>
+      <input type="checkbox" id="toggle-roughing" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Cryogenic & H₂ Gas Manifold</span>
+      <input type="checkbox" id="toggle-plumbing" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>316LN Vacuum 6-Way Cross</span>
+      <input type="checkbox" id="toggle-chamber" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Cathode Cage (16 OFHC Rods)</span>
+      <input type="checkbox" id="toggle-cathode" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Hollow Anode (W-25Re)</span>
+      <input type="checkbox" id="toggle-anode" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>h-BN Insulator Knife-Edge</span>
+      <input type="checkbox" id="toggle-insulator" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Faraday Induction Stator (Si₃N₄)</span>
+      <input type="checkbox" id="toggle-stator" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Decaborane Boiler (Port 3)</span>
+      <input type="checkbox" id="toggle-fuel" class="toggle-checkbox" checked>
+    </label>
+    <label class="layer-toggle">
+      <span>Radiation Clamshell Shield</span>
+      <input type="checkbox" id="toggle-shield" class="toggle-checkbox">
+    </label>
+
+    <div class="slider-container">
+      <div class="slider-label">
+        <span>Studio Lighting Brightness</span>
+        <span id="bright-val">200%</span>
+      </div>
+      <input type="range" id="bright-slider" class="slider-input" min="50" max="350" value="200">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-label">
+        <span>Exploded View Expansion</span>
+        <span id="explode-val">0%</span>
+      </div>
+      <input type="range" id="explode-slider" class="slider-input" min="0" max="100" value="0">
+    </div>
+
+    <div class="slider-container">
+      <div class="slider-label">
+        <span>Chamber Glass Cutaway Opacity</span>
+        <span id="opacity-val">20%</span>
+      </div>
+      <input type="range" id="opacity-slider" class="slider-input" min="0" max="100" value="20">
+    </div>
+
+    <div class="btn-group">
+      <button class="btn" id="btn-gallery" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #34d399; color: #ffffff; box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);">📸 8K Real-Life Lab Photos</button>
+      <button class="btn btn-tour" id="btn-tour-play">🎬 Play Full Lab Guided Tour</button>
+      <button class="btn btn-primary" id="btn-fire">⚡ Fire 50 Hz Plasma Pulse</button>
+      <button class="btn" id="btn-reset-cam">🎥 Reset 3D Camera</button>
+    </div>
+  </div>
+
+  <!-- 8K REAL-LIFE LAB PHOTO MODAL GALLERY -->
+  <div id="photo-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(3, 7, 18, 0.95); backdrop-filter:blur(20px); z-index:1000; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+    <div style="position:absolute; top:20px; right:30px; display:flex; gap:12px;">
+      <button id="modal-close" style="background:#1e293b; border:1px solid #475569; color:#f1f5f9; padding:8px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem;">✖ Close Gallery</button>
+    </div>
+    <div style="text-align:center; margin-bottom:12px;">
+      <h2 id="modal-img-title" style="color:#38bdf8; font-size:1.4rem; font-weight:800; letter-spacing:0.5px;">PROJECT D.E.C.A. - 100 kJ Aneutronic Testbed (Real Laboratory Photograph)</h2>
+      <p id="modal-img-desc" style="color:#94a3b8; font-size:0.85rem; margin-top:4px;">Direct visual through CF 150 quartz viewport: 16 OFHC copper cathode rods, central W-25Re anode, h-BN insulator, and Decaborane boiler on 80/20 chassis.</p>
+    </div>
+    <div style="position:relative; max-width:88vw; max-height:72vh; border-radius:12px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,0.9), 0 0 40px rgba(56, 189, 248, 0.25); border:1px solid rgba(56, 189, 248, 0.4);">
+      <img id="modal-img" src="deca_reactor_lab_photoreal.jpg" style="width:100%; height:auto; max-height:72vh; object-fit:contain; display:block;">
+    </div>
+    <div style="display:flex; gap:14px; margin-top:16px;">
+      <button class="gallery-thumb-btn" id="thumb-1" style="background:rgba(56, 189, 248, 0.2); border:2px solid #38bdf8; color:#f8fafc; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:700; font-size:0.82rem;">1. Full Reactor Rig & Viewport</button>
+      <button class="gallery-thumb-btn" id="thumb-2" style="background:#1e293b; border:1px solid #475569; color:#94a3b8; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:700; font-size:0.82rem;">2. 6-Stage Faraday Stator Induction Duct</button>
+    </div>
+  </div>
+
+  <!-- Bottom-Left Component Inspector -->
+  <div class="hud-panel" id="inspector-panel">
+    <h2 id="ins-title">Component Inspector <span class="badge" id="ins-status">READY</span></h2>
+    <p id="ins-desc">Click any part of the real-world reactor rig to inspect its engineering tolerances, materials, and physics function.</p>
+    <table class="spec-table" id="ins-specs">
+      <tr><td>Subsystem:</td><td id="spec-sub">Complete Laboratory Testbed</td></tr>
+      <tr><td>Material:</td><td id="spec-mat">AISI 316LN / W-25Re / h-BN AX05 / Si₃N₄ / OFHC</td></tr>
+      <tr><td>Operational Temp:</td><td id="spec-temp">77 K (-196°C) to 3,200 K</td></tr>
+      <tr><td>Electrical Rating:</td><td id="spec-elec">100 kV / 3.82 MA Peak / 50 Hz Repetition</td></tr>
+    </table>
+  </div>
+
+  <!-- CINEMATIC GUIDED EXPLAINER TOUR HUD -->
+  <div id="tour-hud">
+    <div class="tour-header">
+      <div class="tour-title" id="tour-step-title">🎬 1. The Real Lab Stand & 100 kJ Capacitor Bank</div>
+      <div class="tour-step-counter" id="tour-step-count">STAGE 1 / 7</div>
+    </div>
+    <div class="tour-body" id="tour-step-desc">
+      The entire reactor is mounted on an 80/20 extruded aluminum optical table frame. Below sits the 100 kJ Maxwell-style pulse capacitor bank, low-loss copper stripline busbars, and the scroll roughing pump.
+    </div>
+    <div class="tour-progress-bar">
+      <div class="tour-progress-fill" id="tour-progress"></div>
+    </div>
+    <div class="tour-controls">
+      <button class="tour-btn" id="tour-prev">◀ Previous</button>
+      <div style="display:flex; gap:8px;">
+        <button class="tour-btn" id="tour-pause">⏸ Pause</button>
+        <button class="tour-btn" id="tour-exit">✖ Exit Tour</button>
+      </div>
+      <button class="tour-btn" id="tour-next">Next ▶</button>
+    </div>
+  </div>
+
+  <!-- Bottom-Right Status Bar -->
+  <div class="hud-panel" id="status-bar">
+    <div class="status-dot"></div>
+    <span>Simulation Engine: Real Hardware Architecture (WebGL 2.0)</span>
+  </div>
+
+  <script>
+    // --- SCENE & CAMERA SETUP ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 6000);
+    camera.position.set(450, 240, 480);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.4;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxDistance = 2000;
+    controls.minDistance = 60;
+    controls.target.set(0, -20, 50);
+
+    // --- HIGH-INTENSITY STUDIO LIGHTING ---
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x475569, 2.0);
+    scene.add(hemiLight);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    keyLight.position.set(500, 700, 500);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 2048;
+    keyLight.shadow.mapSize.height = 2048;
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xbae6fd, 1.8);
+    fillLight.position.set(-500, 350, -400);
+    scene.add(fillLight);
+
+    const bottomLight = new THREE.DirectionalLight(0xfef08a, 1.3);
+    bottomLight.position.set(0, -600, 100);
+    scene.add(bottomLight);
+
+    const plasmaLight = new THREE.PointLight(0xa855f7, 0, 700);
+    plasmaLight.position.set(0, 0, 160);
+    scene.add(plasmaLight);
+
+    // Laboratory Floor Grid
+    const floorGrid = new THREE.GridHelper(2000, 50, 0x38bdf8, 0x1e293b);
+    floorGrid.position.y = -350;
+    scene.add(floorGrid);
+
+    // --- REAL-WORLD MATERIALS PALETTE ---
+    const matAluminumFrame = new THREE.MeshStandardMaterial({
+      color: 0xcfd8dc,
+      metalness: 0.85,
+      roughness: 0.25
+    });
+
+    const matStainless = new THREE.MeshStandardMaterial({
+      color: 0xf1f5f9,
+      metalness: 0.92,
+      roughness: 0.15,
+      transparent: true,
+      opacity: 0.20,
+      depthWrite: false
+    });
+
+    const matStainlessSolid = new THREE.MeshStandardMaterial({
+      color: 0xf8fafc,
+      metalness: 0.94,
+      roughness: 0.12
+    });
+
+    const matBolt = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 0.98,
+      roughness: 0.08
+    });
+
+    const matCopper = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      metalness: 0.95,
+      roughness: 0.14
+    });
+
+    const matTungsten = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      metalness: 0.92,
+      roughness: 0.18
+    });
+
+    const matBoronNitride = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      metalness: 0.02,
+      roughness: 0.18,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.20
+    });
+
+    const matCeramicDuct = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      metalness: 0.08,
+      roughness: 0.30,
+      transparent: true,
+      opacity: 0.70
+    });
+
+    const matCapacitorBlue = new THREE.MeshStandardMaterial({
+      color: 0x0369a1,
+      metalness: 0.40,
+      roughness: 0.35
+    });
+
+    const matBushingPorcelain = new THREE.MeshStandardMaterial({
+      color: 0x7c2d12,
+      metalness: 0.10,
+      roughness: 0.30
+    });
+
+    const matRubberBlack = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      metalness: 0.10,
+      roughness: 0.80
+    });
+
+    const matHeaterWrap = new THREE.MeshStandardMaterial({
+      color: 0xfbbf24,
+      metalness: 0.55,
+      roughness: 0.38,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.25
+    });
+
+    const matFiberOptic = new THREE.MeshStandardMaterial({
+      color: 0x4ade80,
+      emissive: 0x22c55e,
+      emissiveIntensity: 0.85
+    });
+
+    const matLaserGlass = new THREE.MeshStandardMaterial({
+      color: 0x10b981,
+      metalness: 0.1,
+      roughness: 0.1,
+      transparent: true,
+      opacity: 0.65
+    });
+
+    const matLead = new THREE.MeshStandardMaterial({
+      color: 0x475569,
+      metalness: 0.75,
+      roughness: 0.45
+    });
+
+    const matHDPE = new THREE.MeshStandardMaterial({
+      color: 0x0284c7,
+      metalness: 0.15,
+      roughness: 0.35,
+      transparent: true,
+      opacity: 0.50
+    });
+
+    // --- COMPONENT GROUPS ---
+    const reactorRoot = new THREE.Group();
+    scene.add(reactorRoot);
+
+    const groupFrame = new THREE.Group();
+    const groupCaps = new THREE.Group();
+    const groupRoughing = new THREE.Group();
+    const groupPlumbing = new THREE.Group();
+    const groupChamber = new THREE.Group();
+    const groupAnode = new THREE.Group();
+    const groupCathode = new THREE.Group();
+    const groupInsulator = new THREE.Group();
+    const groupStator = new THREE.Group();
+    const groupShield = new THREE.Group();
+    const groupFuel = new THREE.Group();
+    const groupVacuum = new THREE.Group();
+    const groupElectronics = new THREE.Group();
+
+    reactorRoot.add(groupFrame);
+    reactorRoot.add(groupCaps);
+    reactorRoot.add(groupRoughing);
+    reactorRoot.add(groupPlumbing);
+    reactorRoot.add(groupChamber);
+    reactorRoot.add(groupAnode);
+    reactorRoot.add(groupCathode);
+    reactorRoot.add(groupInsulator);
+    reactorRoot.add(groupStator);
+    reactorRoot.add(groupShield);
+    reactorRoot.add(groupFuel);
+    reactorRoot.add(groupVacuum);
+    reactorRoot.add(groupElectronics);
+
+    groupShield.visible = false; // Initially hidden to showcase internals
+
+    const interactiveObjects = [];
+    function registerInteractive(mesh, data) {
+      mesh.userData = data;
+      interactiveObjects.push(mesh);
+    }
+
+    function addBoltCircle(parent, radius, count, zPos, axis = 'Z') {
+      const boltGeom = new THREE.CylinderGeometry(2.5, 2.5, 6, 8);
+      if (axis === 'Z') boltGeom.rotateX(Math.PI / 2);
+      if (axis === 'X') boltGeom.rotateZ(Math.PI / 2);
+
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const bolt = new THREE.Mesh(boltGeom, matBolt);
+        if (axis === 'Z') {
+          bolt.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, zPos);
+        } else if (axis === 'Y') {
+          bolt.position.set(Math.cos(angle) * radius, zPos, Math.sin(angle) * radius);
+        } else if (axis === 'X') {
+          bolt.position.set(zPos, Math.cos(angle) * radius, Math.sin(angle) * radius);
+        }
+        parent.add(bolt);
+      }
+    }
+
+    // =========================================================================
+    // 1. STRUCTURAL 80/20 ALUMINUM LAB STAND (Real Laboratory Chassis)
+    // =========================================================================
+    // 4 Main Vertical Legs
+    const legGeom = new THREE.BoxGeometry(20, 260, 20);
+    const legPositions = [
+      [-160, -220, -160],
+      [160, -220, -160],
+      [-160, -220, 220],
+      [160, -220, 220]
+    ];
+    legPositions.forEach(pos => {
+      const leg = new THREE.Mesh(legGeom, matAluminumFrame);
+      leg.position.set(...pos);
+      groupFrame.add(leg);
+
+      // Leveling foot on each leg
+      const footGeom = new THREE.CylinderGeometry(18, 18, 12, 16);
+      const foot = new THREE.Mesh(footGeom, matRubberBlack);
+      foot.position.set(pos[0], -345, pos[2]);
+      groupFrame.add(foot);
+    });
+
+    // Top Table Mounting Ring / Rails
+    const railXGeom = new THREE.BoxGeometry(340, 20, 20);
+    const railZGeom = new THREE.BoxGeometry(20, 20, 400);
+
+    const railTopFront = new THREE.Mesh(railXGeom, matAluminumFrame);
+    railTopFront.position.set(0, -95, 220);
+    groupFrame.add(railTopFront);
+
+    const railTopBack = new THREE.Mesh(railXGeom, matAluminumFrame);
+    railTopBack.position.set(0, -95, -160);
+    groupFrame.add(railTopBack);
+
+    const railTopLeft = new THREE.Mesh(railZGeom, matAluminumFrame);
+    railTopLeft.position.set(-160, -95, 30);
+    groupFrame.add(railTopLeft);
+
+    const railTopRight = new THREE.Mesh(railZGeom, matAluminumFrame);
+    railTopRight.position.set(160, -95, 30);
+    groupFrame.add(railTopRight);
+
+    // Lower Equipment Deck Shelf (Holds vacuum backing pump & capacitor cans)
+    const shelfGeom = new THREE.BoxGeometry(320, 10, 380);
+    const shelf = new THREE.Mesh(shelfGeom, matAluminumFrame);
+    shelf.position.set(0, -280, 30);
+    groupFrame.add(shelf);
+
+    registerInteractive(shelf, {
+      name: "80/20 Structural Aluminum Lab Chassis",
+      subsystem: "Vibration & Mechanical Support Frame",
+      material: "Extruded 6061-T6 Aluminum Structural Framing",
+      temp: "Ambient 25°C",
+      elec: "Earth Grounded via Tinned Copper Braid",
+      desc: "Industrial optical-grade unistrut test stand with rubber vibration-damping leveling feet. Houses the capacitor bank and roughing pump on the lower shelf."
+    });
+
+    // =========================================================================
+    // 2. 100 kJ MAXWELL-STYLE PULSE CAPACITOR BANK
+    // =========================================================================
+    // 4 High-Voltage Capacitor Cans mounted on lower deck
+    const capCanGeom = new THREE.BoxGeometry(60, 90, 70);
+    const bushingGeom = new THREE.CylinderGeometry(7, 10, 25, 12);
+
+    for (let c = 0; c < 4; c++) {
+      const capCan = new THREE.Mesh(capCanGeom, matCapacitorBlue);
+      const xCap = -90 + (c % 2) * 180;
+      const zCap = -100 + Math.floor(c / 2) * 100;
+      capCan.position.set(xCap, -230, zCap);
+      groupCaps.add(capCan);
+
+      // Ceramic Standoff Bushing
+      const bushing = new THREE.Mesh(bushingGeom, matBushingPorcelain);
+      bushing.position.set(xCap, -172, zCap);
+      groupCaps.add(bushing);
+
+      // Copper Terminal Nut
+      const nutGeom = new THREE.CylinderGeometry(5, 5, 8, 8);
+      const nut = new THREE.Mesh(nutGeom, matCopper);
+      nut.position.set(xCap, -157, zCap);
+      groupCaps.add(nut);
+
+      if (c === 0) {
+        registerInteractive(capCan, {
+          name: "100 kJ Fast Pulse Capacitor Bank (x4)",
+          subsystem: "Primary Pulsed Energy Storage",
+          material: "Polypropylene / Kraft Oil-Impregnated Film in Steel Can",
+          temp: "Ambient (Oil Convection Cooled)",
+          elec: "50 kV DC Charging / 80 µF Total / < 8 nH ESL",
+          desc: "Four 20 µF low-inductance Maxwell-style pulse capacitors connected via parallel stripline to achieve 0.584 µs current risetime."
+        });
+      }
+    }
+
+    // Heavy Tinned Copper Grounding Braid (Bolted to vessel and chassis)
+    const groundBraidCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, -90, -150),
+      new THREE.Vector3(-140, -150, -120),
+      new THREE.Vector3(-160, -280, -100)
+    ]);
+    const groundBraid = new THREE.Mesh(new THREE.TubeGeometry(groundBraidCurve, 20, 6, 8, false), matCopper);
+    groupCaps.add(groundBraid);
+
+    // =========================================================================
+    // 3. VACUUM ROUGHING SYSTEM, GATE VALVE & CORRUGATED FORELINE
+    // =========================================================================
+    // Pneumatic Gate Valve Body between Port 4 and Turbopump
+    const gateValveGeom = new THREE.BoxGeometry(160, 24, 160);
+    const gateValve = new THREE.Mesh(gateValveGeom, matStainlessSolid);
+    gateValve.position.set(0, -182, 0);
+    groupRoughing.add(gateValve);
+
+    // Pneumatic Actuator Cylinder on Gate Valve
+    const airCylGeom = new THREE.CylinderGeometry(14, 14, 60, 16);
+    airCylGeom.rotateZ(Math.PI / 2);
+    const airCyl = new THREE.Mesh(airCylGeom, matCapacitorBlue);
+    airCyl.position.set(110, -182, 0);
+    groupRoughing.add(airCyl);
+
+    // Dry Scroll Backing Pump (On lower shelf)
+    const scrollPumpGeom = new THREE.CylinderGeometry(40, 40, 90, 20);
+    scrollPumpGeom.rotateX(Math.PI / 2);
+    const scrollPump = new THREE.Mesh(scrollPumpGeom, new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 }));
+    scrollPump.position.set(-80, -235, 120);
+    groupRoughing.add(scrollPump);
+
+    // Stainless Steel Corrugated Flexible Bellows Hose (Foreline)
+    const hoseCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, -320, 0),
+      new THREE.Vector3(-40, -310, 40),
+      new THREE.Vector3(-60, -280, 80),
+      new THREE.Vector3(-80, -235, 80)
+    ]);
+    const hoseGeom = new THREE.TubeGeometry(hoseCurve, 32, 10, 12, false);
+    const hose = new THREE.Mesh(hoseGeom, matStainlessSolid);
+    groupRoughing.add(hose);
+
+    registerInteractive(gateValve, {
+      name: "CF 150 Pneumatic High-Vacuum Gate Valve",
+      subsystem: "Vacuum Isolation & Protection",
+      material: "304 Stainless Body with Viton Bonnet Seal",
+      temp: "Ambient",
+      elec: "24 V DC Solenoid Control",
+      desc: "Fast electropneumatic isolation valve (< 50 ms close time) protects turbopump from sudden pressure spikes during gas injection."
+    });
+
+    // =========================================================================
+    // 4. GAS MANIFOLD & LASER DIAGNOSTIC VIEWPORT
+    // =========================================================================
+    // Laser Schlieren Optical Viewport (Port 5, -X)
+    const laserPortFlange = new THREE.Mesh(new THREE.CylinderGeometry(42, 42, 12, 24), matStainlessSolid);
+    laserPortFlange.rotation.z = Math.PI / 2;
+    laserPortFlange.position.set(-145, 0, 0);
+    groupPlumbing.add(laserPortFlange);
+
+    const laserGlass = new THREE.Mesh(new THREE.CylinderGeometry(28, 28, 8, 24), matLaserGlass);
+    laserGlass.rotation.z = Math.PI / 2;
+    laserGlass.position.set(-147, 0, 0);
+    groupPlumbing.add(laserGlass);
+
+    registerInteractive(laserGlass, {
+      name: "CF 63 Laser Schlieren Viewport",
+      subsystem: "Plasma Optical Diagnostics",
+      material: "Fused Silica with 532 nm Anti-Reflective (AR) Coating",
+      temp: "Ambient",
+      elec: "Ground",
+      desc: "Enables ultra-fast 10 ns laser shadowgraphy and interferometry to visualize the moving 387 km/s plasma sheath and pinch density."
+    });
+
+    // Gas Manifold with Pressure Regulator & Dual Dials (Port 3 area)
+    const manifoldBlock = new THREE.Mesh(new THREE.BoxGeometry(30, 20, 20), matStainlessSolid);
+    manifoldBlock.position.set(45, 230, 0);
+    groupPlumbing.add(manifoldBlock);
+
+    function addDial(x, y, z) {
+      const dial = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, 6, 16), matStainlessSolid);
+      dial.rotation.x = Math.PI / 2;
+      dial.position.set(x, y, z);
+      groupPlumbing.add(dial);
+
+      const dialFace = new THREE.Mesh(new THREE.CircleGeometry(7, 16), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      dialFace.position.set(x, y, z + 3.2);
+      groupPlumbing.add(dialFace);
+    }
+    addDial(45, 248, 10);
+    addDial(45, 248, -10);
+
+    // =========================================================================
+    // 5. 316LN VACUUM 6-WAY CROSS
+    // =========================================================================
+    const chamberBodyGeom = new THREE.CylinderGeometry(75, 75, 420, 32, 1, true);
+    chamberBodyGeom.rotateX(Math.PI / 2);
+    const chamberBody = new THREE.Mesh(chamberBodyGeom, matStainless);
+    chamberBody.position.set(0, 0, 60);
+    groupChamber.add(chamberBody);
+    registerInteractive(chamberBody, {
+      name: "316LN 6-Way Cross Vacuum Vessel",
+      subsystem: "Ultra-High Vacuum Envelope",
+      material: "AISI 316LN Low-Permeability Stainless Steel",
+      temp: "25°C - 150°C (Bakeout)",
+      elec: "Chamber Ground (0 V)",
+      desc: "Modified 6-way cross with CF 150/100 knife-edge flanges, electropolished to Ra < 0.2 µm. Maintains 10⁻⁸ Torr base pressure."
+    });
+
+    const chamberVertGeom = new THREE.CylinderGeometry(75, 75, 340, 32, 1, true);
+    const chamberVert = new THREE.Mesh(chamberVertGeom, matStainless);
+    groupChamber.add(chamberVert);
+
+    const chamberTransGeom = new THREE.CylinderGeometry(50, 50, 280, 24, 1, true);
+    chamberTransGeom.rotateZ(Math.PI / 2);
+    const chamberTrans = new THREE.Mesh(chamberTransGeom, matStainless);
+    groupChamber.add(chamberTrans);
+
+    function createFlangeWithBolts(radius, thickness, pos, axis = 'Z', boltCount = 16) {
+      const flangeGeom = new THREE.CylinderGeometry(radius + 20, radius + 20, thickness, 32);
+      if (axis === 'Z') flangeGeom.rotateX(Math.PI / 2);
+      if (axis === 'X') flangeGeom.rotateZ(Math.PI / 2);
+      const flange = new THREE.Mesh(flangeGeom, matStainlessSolid);
+      if (axis === 'Z') flange.position.set(0, 0, pos);
+      if (axis === 'Y') flange.position.set(0, pos, 0);
+      if (axis === 'X') flange.position.set(pos, 0, 0);
+      groupChamber.add(flange);
+
+      addBoltCircle(groupChamber, radius + 10, boltCount, pos + (thickness / 2), axis);
+      return flange;
+    }
+
+    createFlangeWithBolts(75, 18, -150, 'Z', 16);
+    createFlangeWithBolts(75, 18, 270, 'Z', 16);
+    createFlangeWithBolts(75, 18, 170, 'Y', 16);
+    createFlangeWithBolts(75, 18, -170, 'Y', 16);
+    createFlangeWithBolts(50, 16, 140, 'X', 8);
+    createFlangeWithBolts(50, 16, -140, 'X', 8);
+
+    // =========================================================================
+    // 6. HOLLOW CENTRAL ANODE (W-25Re)
+    // =========================================================================
+    const anodeGeom = new THREE.CylinderGeometry(20, 20, 195, 32, 1, true);
+    anodeGeom.rotateX(Math.PI / 2);
+    const anode = new THREE.Mesh(anodeGeom, matTungsten);
+    anode.position.set(0, 0, 62.5);
+    groupAnode.add(anode);
+
+    const anodeBoreGeom = new THREE.CylinderGeometry(9, 9, 195, 24, 1, true);
+    anodeBoreGeom.rotateX(Math.PI / 2);
+    const anodeBore = new THREE.Mesh(anodeBoreGeom, matTungsten);
+    anodeBore.position.set(0, 0, 62.5);
+    groupAnode.add(anodeBore);
+
+    const nozzleGeom = new THREE.CylinderGeometry(20, 12, 18, 32);
+    nozzleGeom.rotateX(Math.PI / 2);
+    const nozzleTip = new THREE.Mesh(nozzleGeom, matTungsten);
+    nozzleTip.position.set(0, 0, 160);
+    groupAnode.add(nozzleTip);
+    registerInteractive(anode, {
+      name: "Hollow Central Anode (W-25Re)",
+      subsystem: "Primary Discharge Electrode",
+      material: "Tungsten - 25% Rhenium Refractory Alloy",
+      temp: "Pinch surface > 3,200 K",
+      elec: "+100 kV Pulsed Anode",
+      desc: "40 mm OD with 18 mm hollow gas-expansion bore. Machined from W-25Re for extreme thermal-shock resistance and zero hydrogen embrittlement."
+    });
+
+    const bellowsGeom = new THREE.CylinderGeometry(28, 28, 35, 24, 8);
+    bellowsGeom.rotateX(Math.PI / 2);
+    const bellows = new THREE.Mesh(bellowsGeom, matStainlessSolid);
+    bellows.position.set(0, 0, -45);
+    groupAnode.add(bellows);
+    registerInteractive(bellows, {
+      name: "CF 100 Edge-Welded Expansion Bellows",
+      subsystem: "Thermal Stress Relief",
+      material: "316LN Edge-Welded Bellows",
+      temp: "120°C",
+      elec: "High Voltage Floating",
+      desc: "Accommodates up to 2.5 mm axial thermal expansion of the anode during 50 Hz operation, preventing shear fracture of the brittle h-BN insulator."
+    });
+
+    // =========================================================================
+    // 7. HEXAGONAL BORON NITRIDE (h-BN) INSULATOR SLEEVE
+    // =========================================================================
+    const hbnGeom = new THREE.CylinderGeometry(26, 26, 65, 32);
+    hbnGeom.rotateX(Math.PI / 2);
+    const hbn = new THREE.Mesh(hbnGeom, matBoronNitride);
+    hbn.position.set(0, 0, -2.5);
+    groupInsulator.add(hbn);
+
+    const lipGeom = new THREE.ConeGeometry(26, 12, 32);
+    lipGeom.rotateX(-Math.PI / 2);
+    const hbnLip = new THREE.Mesh(lipGeom, matBoronNitride);
+    hbnLip.position.set(0, 0, 32);
+    groupInsulator.add(hbnLip);
+    registerInteractive(hbn, {
+      name: "Hot-Pressed Hexagonal Boron Nitride Sleeve",
+      subsystem: "Triple-Junction High-Voltage Insulator",
+      material: "h-BN Grade AX05 (Ultra-Pure)",
+      temp: "Rated to 1,800°C in vacuum",
+      elec: "Dielectric Strength: > 35 kV/mm",
+      desc: "Replaces traditional fragile Al₂O₃. Zero thermal shock cracking, zero oxygen liberation, and engineered 30° knife-edge prevents metal tracking."
+    });
+
+    // =========================================================================
+    // 8. CATHODE SQUIRREL-CAGE RODS (x16, PCD 100 mm)
+    // =========================================================================
+    const numRods = 16;
+    const pcdRadius = 50;
+    const rodLength = 175;
+    const rodGeom = new THREE.CylinderGeometry(4.5, 4.5, rodLength, 16);
+    rodGeom.rotateX(Math.PI / 2);
+
+    for (let i = 0; i < numRods; i++) {
+      const angle = (i / numRods) * Math.PI * 2;
+      const x = Math.cos(angle) * pcdRadius;
+      const y = Math.sin(angle) * pcdRadius;
+      const rod = new THREE.Mesh(rodGeom, matCopper);
+      rod.position.set(x, y, 72.5);
+      groupCathode.add(rod);
+      if (i === 0) {
+        registerInteractive(rod, {
+          name: "OFHC Copper Cathode Rod Array (x16)",
+          subsystem: "Coaxial Return Conductor",
+          material: "Oxygen-Free High Conductivity Copper (W-plated)",
+          temp: "300 K - 500 K (Liquid Cooled)",
+          elec: "0 V (Ground Return)",
+          desc: "16 parallel rods arranged on 100 mm pitch circle diameter, providing 72% optical transparency for laser diagnostics and unobstructed sheath liftoff."
+        });
+      }
+    }
+
+    const ringGeom = new THREE.TorusGeometry(pcdRadius, 4.5, 16, 32);
+    const cathodeRing = new THREE.Mesh(ringGeom, matCopper);
+    cathodeRing.position.set(0, 0, 160);
+    groupCathode.add(cathodeRing);
+
+    // =========================================================================
+    // 9. FARADAY INDUCTION STATOR SUBASSEMBLY
+    // =========================================================================
+    const ductGeom = new THREE.CylinderGeometry(16, 16, 300, 32, 1, true);
+    ductGeom.rotateX(Math.PI / 2);
+    const duct = new THREE.Mesh(ductGeom, matCeramicDuct);
+    duct.position.set(0, 0, 310);
+    groupStator.add(duct);
+    registerInteractive(duct, {
+      name: "Silicon Nitride Faraday Induction Duct",
+      subsystem: "Direct Kinetic-to-Electric Extraction",
+      material: "Sintered Reaction-Bonded Si₃N₄ Ceramic",
+      temp: "Cryogenic Outer / Plasma Core",
+      elec: "Non-Conductive (Zero Eddy Damping)",
+      desc: "Ultra-high strength ceramic vacuum tube. Enables high-frequency magnetic flux of the passing 387 km/s plasmoid to penetrate directly into the copper coils."
+    });
+
+    const statorCoils = [];
+    for (let s = 0; s < 6; s++) {
+      const zCoil = 190 + s * 45;
+      const coilGeom = new THREE.TorusGeometry(26, 6.5, 16, 32);
+      const coil = new THREE.Mesh(coilGeom, matCopper);
+      coil.position.set(0, 0, zCoil);
+      groupStator.add(coil);
+      statorCoils.push(coil);
+
+      const magGeom = new THREE.TorusGeometry(38, 4.5, 16, 32);
+      const mag = new THREE.Mesh(magGeom, new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 }));
+      mag.position.set(0, 0, zCoil);
+      groupStator.add(mag);
+
+      // Braided Cryogenic Line Loop to each coil
+      const cryoLineCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(26, 0, zCoil),
+        new THREE.Vector3(45, 20, zCoil),
+        new THREE.Vector3(55, 60, zCoil)
+      ]);
+      const cryoLine = new THREE.Mesh(new THREE.TubeGeometry(cryoLineCurve, 12, 2.2, 8, false), matStainlessSolid);
+      groupStator.add(cryoLine);
+
+      if (s === 0) {
+        registerInteractive(coil, {
+          name: "6-Stage Faraday Stator Induction Coils",
+          subsystem: "Faraday Induction Power Recovery",
+          material: "LN₂-Cooled OFHC Copper 4-Turn Coaxial Windings",
+          temp: "77 K (-196°C) Liquid Nitrogen Cooled",
+          elec: "577 kV Raw Induced Back-EMF (Clamped to 150 kV)",
+          desc: "Extracts 69.5% of plasmoid kinetic energy directly as electricity via dB/dt flux compression, bypassing all steam turbines and cooling towers."
+        });
+      }
+    }
+
+    // =========================================================================
+    // 10. DECABORANE BOILER & FUEL SYSTEM (Port 3 - Top)
+    // =========================================================================
+    const boilerGeom = new THREE.CylinderGeometry(25, 25, 80, 24);
+    const boiler = new THREE.Mesh(boilerGeom, matHeaterWrap);
+    boiler.position.set(0, 230, 0);
+    groupFuel.add(boiler);
+
+    const fuelTubeCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, 190, 0),
+      new THREE.Vector3(0, 160, 20),
+      new THREE.Vector3(0, 140, 10),
+      new THREE.Vector3(0, 95, 0)
+    ]);
+    const fuelTube = new THREE.Mesh(new THREE.TubeGeometry(fuelTubeCurve, 24, 4.5, 12, false), matStainlessSolid);
+    groupFuel.add(fuelTube);
+
+    const piezoGeom = new THREE.CylinderGeometry(18, 18, 35, 24);
+    const piezoValve = new THREE.Mesh(piezoGeom, matHeaterWrap);
+    piezoValve.position.set(0, 110, 0);
+    groupFuel.add(piezoValve);
+
+    registerInteractive(boiler, {
+      name: "Decaborane (B₁₀H₁₄) Sublimation Boiler",
+      subsystem: "Pulsed Fuel Delivery Subassembly",
+      material: "316L SS + 150W Mica Heating Jacket (120°C)",
+      temp: "120°C Sublimation / 135°C Trace Line",
+      elec: "PID Temperature Controlled (Zero Cu/Brass)",
+      desc: "Sublimates solid B₁₀H₁₄ crystals into saturated vapor swept by 1.5 bar H₂ gas. Includes 5 µm sintered metal frit and dual-wrap piezo valve heater."
+    });
+
+    // =========================================================================
+    // 11. VACUUM CRYO-TRAP & TURBOPUMP (Port 4 - Bottom)
+    // =========================================================================
+    const trapGeom = new THREE.CylinderGeometry(40, 40, 60, 24);
+    const cryoTrap = new THREE.Mesh(trapGeom, matStainlessSolid);
+    cryoTrap.position.set(0, -220, 0);
+    groupVacuum.add(cryoTrap);
+
+    const ln2PipeGeom = new THREE.CylinderGeometry(3.5, 3.5, 40, 12);
+    ln2PipeGeom.rotateZ(Math.PI / 2);
+    const ln2Pipe = new THREE.Mesh(ln2PipeGeom, matCopper);
+    ln2Pipe.position.set(45, -220, 0);
+    groupVacuum.add(ln2Pipe);
+
+    const turboGeom = new THREE.CylinderGeometry(55, 55, 110, 24);
+    const turboPump = new THREE.Mesh(turboGeom, new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.85, roughness: 0.25 }));
+    turboPump.position.set(0, -305, 0);
+    groupVacuum.add(turboPump);
+
+    for (let f = 0; f < 5; f++) {
+      const finGeom = new THREE.TorusGeometry(57, 1.8, 8, 32);
+      finGeom.rotateX(Math.PI / 2);
+      const fin = new THREE.Mesh(finGeom, matStainlessSolid);
+      fin.position.set(0, -270 - f * 16, 0);
+      groupVacuum.add(fin);
+    }
+
+    registerInteractive(cryoTrap, {
+      name: "Liquid Nitrogen Cold-Trap Chevron Baffle",
+      subsystem: "Vacuum Reliability & Dust Protection",
+      material: "316LN Housing with LN₂ Chilled Chevron Array",
+      temp: "77 K (-196°C)",
+      elec: "Chamber Ground",
+      desc: "Freezes out unreacted Decaborane vapor and captures abrasive tungsten dust before it can reach the 80,000 RPM turbomolecular pump blades."
+    });
+
+    // =========================================================================
+    // 12. RADIATION CLAMSHELL SHIELD (Lead + Borated HDPE)
+    // =========================================================================
+    const shieldOuterRadius = 140;
+    const shieldInnerRadius = 100;
+    const shieldHeight = 520;
+
+    const shieldGeomL = new THREE.CylinderGeometry(shieldOuterRadius, shieldOuterRadius, shieldHeight, 32, 1, false, Math.PI / 2, Math.PI);
+    shieldGeomL.rotateX(Math.PI / 2);
+    const shieldL = new THREE.Mesh(shieldGeomL, matHDPE);
+    shieldL.position.set(-5, 0, 70);
+    groupShield.add(shieldL);
+
+    const shieldGeomR = new THREE.CylinderGeometry(shieldOuterRadius, shieldOuterRadius, shieldHeight, 32, 1, false, -Math.PI / 2, Math.PI);
+    shieldGeomR.rotateX(Math.PI / 2);
+    const shieldR = new THREE.Mesh(shieldGeomR, matHDPE);
+    shieldR.position.set(5, 0, 70);
+    groupShield.add(shieldR);
+
+    const leadGeomL = new THREE.CylinderGeometry(shieldInnerRadius + 6, shieldInnerRadius + 6, shieldHeight - 20, 32, 1, false, Math.PI / 2, Math.PI);
+    leadGeomL.rotateX(Math.PI / 2);
+    const leadL = new THREE.Mesh(leadGeomL, matLead);
+    shieldL.add(leadL);
+
+    const leadGeomR = new THREE.CylinderGeometry(shieldInnerRadius + 6, shieldInnerRadius + 6, shieldHeight - 20, 32, 1, false, -Math.PI / 2, Math.PI);
+    leadGeomR.rotateX(Math.PI / 2);
+    const leadR = new THREE.Mesh(leadGeomR, matLead);
+    shieldR.add(leadR);
+
+    function addCaster(parent, x, z) {
+      const wheelGeom = new THREE.CylinderGeometry(8, 8, 6, 16);
+      wheelGeom.rotateZ(Math.PI / 2);
+      const wheel = new THREE.Mesh(wheelGeom, matStainlessSolid);
+      wheel.position.set(x, -shieldHeight / 2 - 12, z);
+      parent.add(wheel);
+    }
+    addCaster(shieldL, -100, 100);
+    addCaster(shieldL, -100, -100);
+    addCaster(shieldR, 100, 100);
+    addCaster(shieldR, 100, -100);
+
+    registerInteractive(shieldL, {
+      name: "Modular Split-Clamshell Radiation Shield",
+      subsystem: "Passive Personnel Radiation Protection",
+      material: "6.0 mm Lead (Pb) + 100 mm 5% Borated HDPE",
+      temp: "Ambient (< 40°C with thermal wrap)",
+      elec: "Zero Power (Passive Safety)",
+      desc: "Lead stops 99.9% of Bremsstrahlung X-rays (100 TVL). Borated HDPE thermalizes and captures stray fast neutrons. Rolls open on heavy-duty casters."
+    });
+
+    // =========================================================================
+    // 13. HIGH VOLTAGE STRIPLINE & OPTICAL FIBERS (Port 1 - Rear)
+    // =========================================================================
+    const striplineGeom = new THREE.BoxGeometry(220, 10, 120);
+    const stripline = new THREE.Mesh(striplineGeom, matCopper);
+    stripline.position.set(0, 0, -170);
+    groupElectronics.add(stripline);
+
+    for (let p = 0; p < 4; p++) {
+      const swGeom = new THREE.CylinderGeometry(14, 14, 45, 16);
+      const sw = new THREE.Mesh(swGeom, new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8 }));
+      sw.position.set(-60 + p * 40, 22, -170);
+      groupElectronics.add(sw);
+    }
+
+    const fiberCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-60, 45, -170),
+      new THREE.Vector3(-100, 120, -120),
+      new THREE.Vector3(-180, 180, -50)
+    ]);
+    const fiberLine = new THREE.Mesh(new THREE.TubeGeometry(fiberCurve, 20, 3.0, 8, false), matFiberOptic);
+    groupElectronics.add(fiberLine);
+
+    registerInteractive(stripline, {
+      name: "Low-Inductance Stripline & Pseudospark Bank",
+      subsystem: "Pulsed Power Injection (< 8 nH)",
+      material: "OFHC Copper Plate + Kapton Dielectric Sandwich",
+      temp: "Ambient (Water cooled)",
+      elec: "100 kV / 3.82 MA / 50 Hz",
+      desc: "Sub-8 nH stripline header triggered by sealed Pseudospark plasma switches (100M+ pulse life) with Avago plastic fiber optic EMP isolation."
+    });
+
+    // =========================================================================
+    // 14. DYNAMIC PLASMA SIMULATION FX
+    // =========================================================================
+    const sheathGeom = new THREE.ConeGeometry(50, 40, 32, 1, true);
+    sheathGeom.rotateX(-Math.PI / 2);
+    const sheathMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0,
+      wireframe: true,
+      side: THREE.DoubleSide
+    });
+    const plasmaSheath = new THREE.Mesh(sheathGeom, sheathMat);
+    scene.add(plasmaSheath);
+
+    const pinchGeom = new THREE.SphereGeometry(10, 32, 32);
+    const pinchMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0
+    });
+    const plasmaPinch = new THREE.Mesh(pinchGeom, pinchMat);
+    plasmaPinch.position.set(0, 0, 160);
+    scene.add(plasmaPinch);
+
+    const plasmoidGeom = new THREE.SphereGeometry(16, 32, 32);
+    const plasmoidMat = new THREE.MeshBasicMaterial({
+      color: 0xc084fc,
+      transparent: true,
+      opacity: 0
+    });
+    const plasmoid = new THREE.Mesh(plasmoidGeom, plasmoidMat);
+    scene.add(plasmoid);
+
+    // Pulse Execution
+    let isFiring = false;
+    let pulseTime = 0;
+
+    function triggerPulse() {
+      if (isFiring) return;
+      isFiring = true;
+      pulseTime = 0;
+      document.getElementById('btn-fire').innerText = "⚡ PULSE ACTIVE (3.82 MA)...";
+      document.getElementById('btn-fire').style.background = "#ef4444";
+    }
+
+    document.getElementById('btn-fire').addEventListener('click', triggerPulse);
+
+    // =========================================================================
+    // 15. UI CONTROLS & LISTENERS
+    // =========================================================================
+    document.getElementById('toggle-frame').addEventListener('change', e => groupFrame.visible = e.target.checked);
+    document.getElementById('toggle-caps').addEventListener('change', e => groupCaps.visible = e.target.checked);
+    document.getElementById('toggle-roughing').addEventListener('change', e => groupRoughing.visible = e.target.checked);
+    document.getElementById('toggle-plumbing').addEventListener('change', e => groupPlumbing.visible = e.target.checked);
+    document.getElementById('toggle-shield').addEventListener('change', e => groupShield.visible = e.target.checked);
+    document.getElementById('toggle-chamber').addEventListener('change', e => groupChamber.visible = e.target.checked);
+    document.getElementById('toggle-cathode').addEventListener('change', e => groupCathode.visible = e.target.checked);
+    document.getElementById('toggle-anode').addEventListener('change', e => groupAnode.visible = e.target.checked);
+    document.getElementById('toggle-insulator').addEventListener('change', e => groupInsulator.visible = e.target.checked);
+    document.getElementById('toggle-stator').addEventListener('change', e => groupStator.visible = e.target.checked);
+    document.getElementById('toggle-fuel').addEventListener('change', e => groupFuel.visible = e.target.checked);
+
+    // Brightness Slider
+    const brightSlider = document.getElementById('bright-slider');
+    const brightVal = document.getElementById('bright-val');
+    brightSlider.addEventListener('input', e => {
+      const b = e.target.value / 100;
+      brightVal.innerText = `${e.target.value}%`;
+      ambientLight.intensity = 1.5 * b;
+      hemiLight.intensity = 2.0 * b;
+      keyLight.intensity = 2.4 * b;
+      fillLight.intensity = 1.8 * b;
+      bottomLight.intensity = 1.3 * b;
+    });
+
+    // Exploded View Slider
+    const explodeSlider = document.getElementById('explode-slider');
+    const explodeVal = document.getElementById('explode-val');
+    explodeSlider.addEventListener('input', e => {
+      const factor = e.target.value / 100;
+      explodeVal.innerText = `${e.target.value}%`;
+
+      shieldL.position.x = -5 - (factor * 140);
+      shieldR.position.x = 5 + (factor * 140);
+      groupFuel.position.y = factor * 90;
+      groupVacuum.position.y = -factor * 90;
+      groupStator.position.z = factor * 130;
+      groupElectronics.position.z = -factor * 90;
+    });
+
+    // Chamber Opacity Slider
+    const opacitySlider = document.getElementById('opacity-slider');
+    const opacityVal = document.getElementById('opacity-val');
+    opacitySlider.addEventListener('input', e => {
+      const op = e.target.value / 100;
+      opacityVal.innerText = `${e.target.value}%`;
+      matStainless.opacity = op;
+    });
+
+    // Reset Camera
+    document.getElementById('btn-reset-cam').addEventListener('click', () => {
+      stopTour();
+      camera.position.set(450, 240, 480);
+      controls.target.set(0, -20, 50);
+      controls.update();
+    });
+
+    // Raycaster / Inspection
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const tooltip = document.getElementById('tooltip');
+
+    window.addEventListener('mousemove', e => {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
+      if (intersects.length > 0) {
+        let topObj = intersects[0].object;
+        while (topObj && !topObj.userData.name && topObj.parent) {
+          topObj = topObj.parent;
+        }
+        if (topObj && topObj.userData.name) {
+          tooltip.style.display = 'block';
+          tooltip.style.left = `${e.clientX}px`;
+          tooltip.style.top = `${e.clientY}px`;
+          tooltip.innerText = topObj.userData.name;
+          document.body.style.cursor = 'pointer';
+          return;
+        }
+      }
+      tooltip.style.display = 'none';
+      document.body.style.cursor = 'default';
+    });
+
+    window.addEventListener('click', e => {
+      if (e.target.closest('.hud-panel') || e.target.closest('#tour-hud')) return;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
+      if (intersects.length > 0) {
+        let topObj = intersects[0].object;
+        while (topObj && !topObj.userData.name && topObj.parent) {
+          topObj = topObj.parent;
+        }
+        if (topObj && topObj.userData.name) {
+          const d = topObj.userData;
+          document.getElementById('ins-title').innerHTML = `${d.name} <span class="badge">INSPECTED</span>`;
+          document.getElementById('ins-desc').innerText = d.desc;
+          document.getElementById('spec-sub').innerText = d.subsystem;
+          document.getElementById('spec-mat').innerText = d.material;
+          document.getElementById('spec-temp').innerText = d.temp;
+          document.getElementById('spec-elec').innerText = d.elec;
+        }
+      }
+    });
+
+    // =========================================================================
+    // 15B. REAL-LIFE 8K PHOTO MODAL GALLERY HANDLERS
+    // =========================================================================
+    const photoModal = document.getElementById('photo-modal');
+    const modalImg = document.getElementById('modal-img');
+    const modalTitle = document.getElementById('modal-img-title');
+    const modalDesc = document.getElementById('modal-img-desc');
+    const thumb1 = document.getElementById('thumb-1');
+    const thumb2 = document.getElementById('thumb-2');
+
+    document.getElementById('btn-gallery').addEventListener('click', () => {
+      photoModal.style.display = 'flex';
+    });
+
+    document.getElementById('modal-close').addEventListener('click', () => {
+      photoModal.style.display = 'none';
+    });
+
+    thumb1.addEventListener('click', () => {
+      modalImg.src = 'deca_reactor_lab_photoreal.jpg';
+      modalTitle.innerText = 'PROJECT D.E.C.A. - 100 kJ Aneutronic Testbed (Real Laboratory Photograph)';
+      modalDesc.innerText = 'Direct visual through CF 150 quartz viewport: 16 OFHC copper cathode rods, central W-25Re anode, h-BN insulator, and Decaborane boiler on 80/20 chassis.';
+      thumb1.style.borderColor = '#38bdf8';
+      thumb1.style.background = 'rgba(56, 189, 248, 0.2)';
+      thumb1.style.color = '#f8fafc';
+      thumb2.style.borderColor = '#475569';
+      thumb2.style.background = '#1e293b';
+      thumb2.style.color = '#94a3b8';
+    });
+
+    thumb2.addEventListener('click', () => {
+      modalImg.src = 'deca_reactor_stator_closeup.jpg';
+      modalTitle.innerText = '6-Stage Faraday Induction Stator Energy Recovery Duct (Real Laboratory Photograph)';
+      modalDesc.innerText = 'Close-up of translucent Si₃N₄ ceramic vacuum tube wrapped in six LN₂-cooled copper coils (S1 to S6) with high-speed 387 km/s plasmoid beam generating 577 kV direct back-EMF.';
+      thumb2.style.borderColor = '#38bdf8';
+      thumb2.style.background = 'rgba(56, 189, 248, 0.2)';
+      thumb2.style.color = '#f8fafc';
+      thumb1.style.borderColor = '#475569';
+      thumb1.style.background = '#1e293b';
+      thumb1.style.color = '#94a3b8';
+    });
+
+    // =========================================================================
+    // 16. CINEMATIC GUIDED TOUR ENGINE (7 Realistic Stages)
+    // =========================================================================
+    const tourStages = [
+      {
+        title: "🎬 1. The Lab Stand & 100 kJ Capacitor Bank",
+        count: "STAGE 1 / 7",
+        desc: "The entire reactor is mounted on an 80/20 extruded aluminum optical table frame. Below sits the 100 kJ Maxwell-style pulse capacitor bank, low-loss copper stripline busbars, and the scroll roughing pump.",
+        camPos: new THREE.Vector3(380, -120, 360),
+        target: new THREE.Vector3(0, -180, 0),
+        action: () => {
+          groupShield.visible = false;
+          document.getElementById('toggle-shield').checked = false;
+        }
+      },
+      {
+        title: "🧪 2. Fuel Sublimation Boiler & Piezo Valve (Port 3)",
+        count: "STAGE 2 / 7",
+        desc: "At the top port: Solid Decaborane (B₁₀H₁₄) crystal pellets in the heated 316L cell are warmed to 120°C. 1.5 bar Hydrogen carrier gas sweeps the vapor through a 5-micron sintered filter into the high-speed piezo valve, puffing fuel into the breech.",
+        camPos: new THREE.Vector3(40, 340, 180),
+        target: new THREE.Vector3(0, 180, 0),
+        action: () => {
+          matStainless.opacity = 0.20;
+        }
+      },
+      {
+        title: "⚡ 3. The Coaxial Gun & h-BN Knife-Edge Insulator",
+        count: "STAGE 3 / 7",
+        desc: "Looking inside the chamber: The central hollow W-25Re anode (40 mm OD) is enclosed by 16 OFHC copper cathode rods. At the base sits the Hot-Pressed Hexagonal Boron Nitride (h-BN) insulator sleeve with its 30° knife-edge lip, preventing flashover.",
+        camPos: new THREE.Vector3(160, 90, -110),
+        target: new THREE.Vector3(0, 0, 10),
+        action: () => {
+          groupChamber.visible = true;
+          matStainless.opacity = 0.15;
+        }
+      },
+      {
+        title: "💥 4. 387 km/s Rundown & 326 T Self-Pinch (Q_plasma = 4.20)",
+        count: "STAGE 4 / 7",
+        desc: "Discharge fires: Lorentz forces sweep a plasma sheath down the barrel at 387 km/s in 0.584 µs. At the tip, a 3.82 MA collapse creates a 326 Tesla pinch, triggering aneutronic p-¹¹B fusion producing 420 kJ of fusion kinetic energy (Q = 4.20)!",
+        camPos: new THREE.Vector3(120, 70, 220),
+        target: new THREE.Vector3(0, 0, 160),
+        action: () => {
+          triggerPulse();
+        }
+      },
+      {
+        title: "🌀 5. 6-Stage Faraday Stator Induction (69.5% Direct)",
+        count: "STAGE 5 / 7",
+        desc: "Escaping the Steam Trap: The high-speed plasmoid shoots into the Silicon Nitride (Si₃N₄) ceramic duct, passing through 6 LN₂-cooled copper coils. Magnetic flux compression induces back-EMF, extracting 69.5% of kinetic energy directly as electricity without steam!",
+        camPos: new THREE.Vector3(260, 140, 330),
+        target: new THREE.Vector3(0, 0, 300),
+        action: () => {
+          triggerPulse();
+        }
+      },
+      {
+        title: "🛡️ 6. Passive Clamshell Radiation Shield on Casters",
+        count: "STAGE 6 / 7",
+        desc: "The modular split-clamshell rolls shut: 6 mm Lead stops 99.9% of Bremsstrahlung X-rays (100 TVL), while 100 mm Borated HDPE thermalizes and captures stray fast neutrons. Below, the LN₂ cold trap freezes unburned boron dust, shielding the 80,000 RPM turbopump.",
+        camPos: new THREE.Vector3(340, 150, 190),
+        target: new THREE.Vector3(0, -50, 70),
+        action: () => {
+          groupShield.visible = true;
+          document.getElementById('toggle-shield').checked = true;
+        }
+      },
+      {
+        title: "⚡ 7. SiC Power Inverter & 7.62 MW Grid Output (Q_eng = 2.25)",
+        count: "STAGE 7 / 7",
+        desc: "At the rear stripline, 12-stage Silicon Carbide (SiC) converters clamp the 577 kV pulse to 150 kV, resonantly recharging the capacitor bank in 15 ms, while pushing 7.62 MW continuous clean 33 kV AC electricity into the municipal grid at 50 Hz (+125% net surplus electricity)!",
+        camPos: new THREE.Vector3(-280, 160, -210),
+        target: new THREE.Vector3(0, 0, -140),
+        action: () => {
+          groupShield.visible = false;
+          document.getElementById('toggle-shield').checked = false;
+        }
+      }
+    ];
+
+    let currentTourIndex = 0;
+    let tourActive = false;
+    let tourTimer = null;
+    let tourPaused = false;
+    let tourProgress = 0;
+
+    const tourHud = document.getElementById('tour-hud');
+    const tourTitle = document.getElementById('tour-step-title');
+    const tourCount = document.getElementById('tour-step-count');
+    const tourDesc = document.getElementById('tour-step-desc');
+    const tourProgFill = document.getElementById('tour-progress');
+
+    function startTour() {
+      tourActive = true;
+      currentTourIndex = 0;
+      tourPaused = false;
+      tourHud.style.display = 'flex';
+      document.getElementById('btn-tour-play').innerText = "⏹ Stop Guided Tour";
+      goToTourStage(0);
+    }
+
+    function stopTour() {
+      tourActive = false;
+      tourHud.style.display = 'none';
+      if (tourTimer) clearInterval(tourTimer);
+      document.getElementById('btn-tour-play').innerText = "🎬 Play Full Lab Guided Tour";
+    }
+
+    function goToTourStage(index) {
+      if (index < 0) index = 0;
+      if (index >= tourStages.length) {
+        stopTour();
+        return;
+      }
+      currentTourIndex = index;
+      const stage = tourStages[index];
+
+      tourTitle.innerText = stage.title;
+      tourCount.innerText = stage.count;
+      tourDesc.innerText = stage.desc;
+
+      camTargetPos.copy(stage.camPos);
+      controlsTargetPos.copy(stage.target);
+      isTweeningCam = true;
+
+      if (stage.action) stage.action();
+
+      tourProgress = 0;
+      tourProgFill.style.width = "0%";
+
+      if (tourTimer) clearInterval(tourTimer);
+      const stageDuration = 9500;
+      const interval = 100;
+      let elapsed = 0;
+
+      tourTimer = setInterval(() => {
+        if (!tourPaused) {
+          elapsed += interval;
+          tourProgress = (elapsed / stageDuration) * 100;
+          tourProgFill.style.width = `${Math.min(tourProgress, 100)}%`;
+
+          if (elapsed >= stageDuration) {
+            clearInterval(tourTimer);
+            goToTourStage(currentTourIndex + 1);
+          }
+        }
+      }, interval);
+    }
+
+    document.getElementById('btn-tour-play').addEventListener('click', () => {
+      if (tourActive) {
+        stopTour();
+      } else {
+        startTour();
+      }
+    });
+
+    document.getElementById('tour-next').addEventListener('click', () => goToTourStage(currentTourIndex + 1));
+    document.getElementById('tour-prev').addEventListener('click', () => goToTourStage(currentTourIndex - 1));
+    document.getElementById('tour-pause').addEventListener('click', () => {
+      tourPaused = !tourPaused;
+      document.getElementById('tour-pause').innerText = tourPaused ? "▶ Resume" : "⏸ Pause";
+    });
+    document.getElementById('tour-exit').addEventListener('click', stopTour);
+
+    let isTweeningCam = false;
+    const camTargetPos = new THREE.Vector3();
+    const controlsTargetPos = new THREE.Vector3();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+
+      if (isTweeningCam) {
+        camera.position.lerp(camTargetPos, 0.05);
+        controls.target.lerp(controlsTargetPos, 0.05);
+        if (camera.position.distanceTo(camTargetPos) < 2 && controls.target.distanceTo(controlsTargetPos) < 2) {
+          isTweeningCam = false;
+        }
+      }
+
+      controls.update();
+
+      if (!isTweeningCam && !tourActive && !isFiring) {
+        reactorRoot.rotation.y += 0.0006;
+      }
+
+      if (isFiring) {
+        pulseTime += delta * 1.4;
+
+        if (pulseTime < 0.35) {
+          const prog = pulseTime / 0.35;
+          plasmaSheath.position.set(0, 0, prog * 160);
+          sheathMat.opacity = Math.sin(prog * Math.PI) * 0.9;
+          plasmaLight.intensity = prog * 3.5;
+          plasmaLight.color.setHex(0x38bdf8);
+          plasmaLight.position.set(0, 0, prog * 160);
+        } else if (pulseTime < 0.50) {
+          sheathMat.opacity = 0;
+          const pinchProg = (pulseTime - 0.35) / 0.15;
+          const scale = 1.0 + Math.sin(pinchProg * Math.PI) * 2.2;
+          plasmaPinch.scale.set(scale, scale, scale);
+          pinchMat.opacity = Math.sin(pinchProg * Math.PI) * 1.0;
+          plasmaLight.intensity = 8.0;
+          plasmaLight.color.setHex(0xffffff);
+        } else if (pulseTime < 0.95) {
+          plasmaPinch.scale.set(1, 1, 1);
+          pinchMat.opacity = 0;
+          const jetProg = (pulseTime - 0.50) / 0.45;
+          const zJet = 160 + jetProg * 320;
+          plasmoid.position.set(0, 0, zJet);
+          plasmoidMat.opacity = Math.sin(jetProg * Math.PI) * 0.95;
+          plasmaLight.intensity = Math.sin(jetProg * Math.PI) * 5.0;
+          plasmaLight.color.setHex(0xc084fc);
+          plasmaLight.position.set(0, 0, zJet);
+
+          statorCoils.forEach((c) => {
+            const dist = Math.abs(c.position.z - zJet);
+            if (dist < 45) {
+              c.material.emissive = new THREE.Color(0x38bdf8);
+              c.material.emissiveIntensity = (1.0 - dist / 45) * 1.0;
+            } else {
+              c.material.emissiveIntensity = 0;
+            }
+          });
+        } else {
+          isFiring = false;
+          sheathMat.opacity = 0;
+          pinchMat.opacity = 0;
+          plasmoidMat.opacity = 0;
+          plasmaLight.intensity = 0;
+          statorCoils.forEach(c => c.material.emissiveIntensity = 0);
+          document.getElementById('btn-fire').innerText = "⚡ Fire 50 Hz Plasma Pulse";
+          document.getElementById('btn-fire').style.background = "";
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
