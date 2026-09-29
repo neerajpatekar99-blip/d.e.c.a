@@ -56,7 +56,7 @@
 
 > 🔗 **Open-Source Project Repository & Interactive 3D WebGL Viewer:**  
 > Check out the complete 1D numerical simulation code, CAD mechanical specifications, and the interactive real-time 3D reactor visualizer here:  
-> 👉 https://github.com/neerajpatekar99-blip/DIRECT-PLASMA-REACTOR  
+> 👉 https://github.com/neerajpatekar99-blip/thermal-nuclear-power-plant-reasearch  
 >
 > Feel free to explore the blueprints, inspect the electrode tolerances, and share your technical critique!
 

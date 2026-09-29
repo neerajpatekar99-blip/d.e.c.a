@@ -44,7 +44,7 @@ Over the past several months, I have been conducting theoretical modeling on an 
 2. **High-Temperature Metallurgy:** Evaluating thermal shock resistance and erosion limits in Tungsten-Rhenium (W-25Re) alloy nozzle tips and Hexagonal Boron Nitride (h-BN) ceramic dielectric sleeves.
 
 I have compiled the 1D mathematical model, chemical sublimation subsystem specifications, and an open-source 3D CAD testbed:  
-🔗 **Project Repository:** [https://github.com/neerajpatekar99-blip/DIRECT-PLASMA-REACTOR]
+🔗 **Project Repository:** [https://github.com/neerajpatekar99-blip/thermal-nuclear-power-plant-reasearch]
 
 As a prospective student passionate about pursuing Chemical Engineering at VJTI, I would be deeply grateful for 10 minutes of your guidance or any advice on foundational chemical engineering principles I should study ahead of my diploma studies.
 
@@ -80,7 +80,7 @@ My name is Neeraj Patekar, a 14-year-old student (Class 10, Ryan International S
 Inspired by your work on electrode geometries and plasma pinch dynamics, I have developed an open-source theoretical framework called **Project D.E.C.A.** (Direct Electromagnetic Conversion Architecture). It models a 100 kJ pulsed DPF system driving an aneutronic Proton-Boron-11 (`p + ¹¹B → 3 ⁴He + 8.7 MeV`) reaction, with a 6-stage Faraday induction stator to extract electricity directly from the moving plasmoid (387 km/s, 326 T) at an engineering Q_eng of 2.25.
 
 I have documented the complete 1D Lee model simulation and mechanical CAD blueprints here:  
-🔗 **Repository:** [https://github.com/neerajpatekar99-blip/DIRECT-PLASMA-REACTOR]
+🔗 **Repository:** [https://github.com/neerajpatekar99-blip/thermal-nuclear-power-plant-reasearch]
 
 Given your deep experimental experience with DPF machines at BARC, I would be deeply grateful for your perspective on two specific challenges:
 1. Minimizing anode tip ablation during repeated multi-megampere pinches using W-25Re alloys.
@@ -117,7 +117,7 @@ I hope this email finds you well. My name is Neeraj Patekar, a 14-year-old stude
 Alongside my school studies, I have modeled a theoretical clean energy architecture—**Project D.E.C.A.**—which couples a 100 kJ coaxial DPF gun to an external 6-stage Faraday induction stator. Rather than relying on steam turbines, the architecture extracts 69.5% of the plasmoid’s kinetic energy directly as high-voltage electricity via electromagnetic induction as it shoots through a Si₃N₄ ceramic tube.
 
 The full numerical simulations, telemetry plots, and 3D visualizer are available here:  
-🔗 **Repository:** [https://github.com/neerajpatekar99-blip/DIRECT-PLASMA-REACTOR]
+🔗 **Repository:** [https://github.com/neerajpatekar99-blip/thermal-nuclear-power-plant-reasearch]
 
 I would be immensely honored if you could spare 5 to 10 minutes to review my snowplow rundown calculations (peak velocity 387 km/s at 3.82 MA current) and offer any critical feedback on plasma sheath stability during ejection.
 
