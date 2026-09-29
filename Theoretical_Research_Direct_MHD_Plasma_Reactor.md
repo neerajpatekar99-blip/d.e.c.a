@@ -1,9 +1,8 @@
 # Project D.E.C.A.: Direct Electromagnetic Conversion Architecture
 ## A Theoretical Framework for Steam-Free Magnetohydrodynamic (MHD) Energy Extraction from Gas-Core Fission and Aneutronic Fusion Plasma
 
-**Lead Theoretical Author:** Neeraj Bhupendra Patekar  
-**Academic Affiliation:** Student Researcher (Class 10-E, Roll No. 25, Ryan International School, Kalamboli, Navi Mumbai)  
-**Research Focus:** Advanced High-Temperature Plasma Dynamics, Magnetohydrodynamic Direct Induction, and Closed-Loop Clean Energy Systems  
+**Author:** Neeraj Bhupendra Patekar  
+**Domain:** Advanced High-Temperature Plasma Dynamics, Magnetohydrodynamic Direct Induction, and Closed-Loop Clean Energy Systems  
 **Date of Formulation:** September 20, 2026  
 
 ---

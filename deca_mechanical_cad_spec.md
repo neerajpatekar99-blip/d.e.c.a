@@ -1,11 +1,9 @@
 # Project D.E.C.A. - Phase I Mechanical & Vacuum Chamber Engineering Blueprint
 ## 3D CAD Assembly, Tolerancing, and Vacuum-Electromagnetic Hardware Specification
 
-**Lead Theoretical Architect:** Neeraj Bhupendra Patekar  
-**Academic Affiliation:** Student Researcher (Class 10-E, Ryan International School, Kalamboli, Navi Mumbai)  
-**Research Domain:** Mechanical CAD Design, Ultra-High Vacuum (UHV) Systems, Pulsed-Power Hardware Engineering  
+**Author:** Neeraj Bhupendra Patekar  
+**Domain:** Mechanical CAD Design, Ultra-High Vacuum (UHV) Systems, Pulsed-Power Hardware Engineering  
 **Document Classification:** Mechanical & Vacuum Architecture Blueprint (Rev 1.0)  
-**Target Repository:** `DIRECT-PLASMA-REACTOR`  
 **Date of Formulation:** September 25, 2026  
 
 ---
