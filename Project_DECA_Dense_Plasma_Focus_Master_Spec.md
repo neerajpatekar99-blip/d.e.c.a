@@ -1,11 +1,9 @@
 # Project D.E.C.A. - Phase I Engineering Master Specification
 ## Pulsed Dense Plasma Focus (DPF) with Inductive Direct Energy Conversion (p-¹¹B Aneutronic Fusion)
 
-**Lead Theoretical Architect:** Neeraj Bhupendra Patekar  
-**Academic Affiliation:** Student Researcher (Class 10-E, Ryan International School, Kalamboli, Navi Mumbai)  
-**Research Domain:** Pulsed-Power Magnetohydrodynamics (MHD), High-Energy Density Plasma Physics, Direct Inductive Conversion  
+**Author:** Neeraj Bhupendra Patekar  
+**Domain:** Pulsed-Power Magnetohydrodynamics (MHD), High-Energy Density Plasma Physics, Direct Inductive Conversion  
 **Document Classification:** Engineering Master Specification (Rev 1.0)  
-**Target Repository:** `DIRECT-PLASMA-REACTOR`  
 **Date of Ratification:** September 25, 2026  
 
 ---
