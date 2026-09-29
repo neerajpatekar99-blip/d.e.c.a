@@ -21,7 +21,7 @@ By replacing massive thermal blankets and steam turbines with an integrated, ult
      (100 kJ, 50 kV, SiC)            (Multi-layer Kapton)             (Hollow W-25Re Anode)
                                                                                │
                                                                                ▼
-  [ M.E.T.S. Battery Bank ] ◄── [ Solid-State SiC Inverter ] ◄── [ Faraday Induction Stator ]
+  [ Utility Grid / Storage ] ◄── [ Solid-State SiC Inverter ] ◄── [ Faraday Induction Stator ]
     (50 Hz Smooth AC Grid)         (Active Clamp & Rectifier)       (Direct Kinetic Capture 70%)
 ```
 
