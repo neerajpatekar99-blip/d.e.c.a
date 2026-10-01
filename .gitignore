@@ -10,7 +10,8 @@
 *.jpg
 *.pdf
 
-# Proprietary Mechanical CAD & Sub-Assembly Blueprints (Trade Secrets)
+# Proprietary Mechanical CAD, Blueprints & Master Engineering Specs (Private Vault)
+Project_DECA_Dense_Plasma_Focus_Master_Spec.md
 deca_mechanical_cad_spec.md
 deca_fuel_vaporizer_spec.md
 deca_radiation_shielding_spec.md
