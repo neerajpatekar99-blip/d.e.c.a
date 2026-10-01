@@ -15,3 +15,10 @@ Project_DECA_Dense_Plasma_Focus_Master_Spec.md
 deca_mechanical_cad_spec.md
 deca_fuel_vaporizer_spec.md
 deca_radiation_shielding_spec.md
+
+# Environment variables and API keys
+.env
+*.env
+*.key
+*.json
+*.xyz
