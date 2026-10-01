@@ -73,18 +73,17 @@ Instead of degrading high-energy fusion particles into bulk heat to boil water, 
 
 ## 📁 Open Scientific Specifications & Research Documents
 
-The following documents constitute the open research literature, mechanical blueprints, and theoretical formulations of Project D.E.C.A.:
+The following documents constitute the open scientific literature, thermodynamic models, and magnetohydrodynamic formulations of Project D.E.C.A.:
 
-| Document | Core Scientific & Engineering Focus |
+| Document | Core Scientific & Physics Focus |
 | :--- | :--- |
-| **[`Project_DECA_Dense_Plasma_Focus_Master_Spec.md`](./Project_DECA_Dense_Plasma_Focus_Master_Spec.md)** | **Master Engineering Specification:** Complete pulsed-power parameters, W-25Re electrode tolerancing, low-inductance stripline design (`L < 8 nH`), Faraday stator dynamics, and p-¹¹B energy balance. |
-| **[`deca_mechanical_cad_spec.md`](./deca_mechanical_cad_spec.md)** | **Mechanical & Vacuum Blueprint:** 316LN stainless steel 6-way cross chamber, CF 150/100 flange matrix, electrode concentricity tolerances, and Boron Nitride dielectric interfaces. |
-| **[`deca_fuel_vaporizer_spec.md`](./deca_fuel_vaporizer_spec.md)** | **Decaborane (B₁₀H₁₄) Sublimation Subsystem:** Non-condensing 120°C thermal sublimation cell, H₂ carrier gas sweep, trace-heated lines, and fast piezoelectric puff valves. |
-| **[`deca_radiation_shielding_spec.md`](./deca_radiation_shielding_spec.md)** | **Radiation Safety & Containment Envelope:** Modular split-clamshell shield with 6 mm lead sheet (stopping 99.9% of Bremsstrahlung X-rays) and 100 mm 5% Borated HDPE neutron thermalizer. |
-| **[`Theoretical_Research_Direct_MHD_Plasma_Reactor.md`](./Theoretical_Research_Direct_MHD_Plasma_Reactor.md)** | **Theoretical Whitepaper:** Mathematical foundations of inductive electrodeless magnetohydrodynamics (MHD), Lorentz force charge separation, and supersonic magnetic nozzle expansion. |
+| **[`Project_DECA_Dense_Plasma_Focus_Master_Spec.md`](./Project_DECA_Dense_Plasma_Focus_Master_Spec.md)** | **Master Engineering & Physics Specification:** Complete pulsed-power parameters, low-inductance stripline architecture (`L < 8 nH`), Faraday stator dynamics, and p-¹¹B energy balance. |
+| **[`Theoretical_Research_Direct_MHD_Plasma_Reactor.md`](./Theoretical_Research_Direct_MHD_Plasma_Reactor.md)** | **Theoretical Physics Whitepaper:** Mathematical foundations of inductive electrodeless magnetohydrodynamics (MHD), Lorentz force charge separation, and supersonic magnetic nozzle expansion. |
+
+*(Note: Detailed mechanical CAD tolerancing, proprietary fuel injection nozzle geometries, and fabrication blueprints are maintained in private laboratory archives to protect intellectual property and patent rights).*
 
 ---
 
 ## ⚖️ Research Scope & Open Attribution
 
-This repository is dedicated strictly to open scientific research in pulsed plasma physics, aneutronic fuel cycles, and electrodeless direct energy conversion. All theoretical models and engineering blueprints are made available for academic peer review, scientific evaluation, and collaborative development.
+This repository is dedicated to open scientific research in pulsed plasma physics, aneutronic fuel cycles, and electrodeless direct energy conversion. Theoretical models and thermodynamic balances are published for academic peer review and scientific evaluation.

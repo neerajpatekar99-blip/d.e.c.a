@@ -1,0 +1,16 @@
+# Project D.E.C.A. - Git Ignore for Proprietary CAD & Trade Secrets
+*.step
+*.stp
+*.dxf
+*.dwg
+*.cad
+*.py
+*.html
+*.png
+*.jpg
+*.pdf
+
+# Proprietary Mechanical CAD & Sub-Assembly Blueprints (Trade Secrets)
+deca_mechanical_cad_spec.md
+deca_fuel_vaporizer_spec.md
+deca_radiation_shielding_spec.md
